@@ -1,0 +1,12 @@
+<Project>
+
+  <PropertyGroup>
+    <PackageId>$([MSBuild]::ValueOrDefault('$(AssemblyName)', '').Replace('FS.', 'Schick.'))</PackageId>
+    <PackageDescription>$(Description)</PackageDescription>
+    <PackageIcon>Schick.Keycloak.RestApiClient.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageTags>$(Tags)</PackageTags>
+  </PropertyGroup>
+
+</Project>

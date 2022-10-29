@@ -1,0 +1,10 @@
+{
+  "library": "httpclient",
+  "netCoreProjectFile": true,
+  "targetFramework": "netstandard2.0",
+  "packageName": "FS.Keycloak.RestApiClient",
+  "useDateTimeOffset": false,
+  "conditionalSerialization": true,
+  "nullableReferenceTypes": false,
+  "optionalEmitDefaultValues": true
+}

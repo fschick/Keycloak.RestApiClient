@@ -1,0 +1,22 @@
+<Project>
+
+  <PropertyGroup>
+    <Product>Time Tracking Report Server</Product>
+    <Title>$(Product)</Title>
+    <Description>$(Product)</Description>
+    <Authors>Florian Schick</Authors>
+    <Company>Schick Software Entwicklung</Company>
+    <Copyright>© Florian Schick, 2021-2022 all rights reserved</Copyright>
+    <Owners>$(Company)</Owners>
+    <Summary>$(Description)</Summary>
+    <Tags></Tags>
+
+    <Version>0.0.0.0</Version>
+    <FileVersion>0.0.0.0</FileVersion>
+    <AssemblyVersion>$(FileVersion)</AssemblyVersion>
+
+    <RepositoryUrl>https://github.com/fschick/TimeTracking.ReportServer.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+  </PropertyGroup>
+
+</Project>

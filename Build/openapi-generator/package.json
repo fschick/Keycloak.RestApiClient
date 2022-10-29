@@ -1,0 +1,11 @@
+{
+  "name": "build",
+  "version": "1.0.0",
+  "description": "Internal build only",
+  "main": "index.js",
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@openapitools/openapi-generator-cli": "^2.5.1"
+  }
+}
