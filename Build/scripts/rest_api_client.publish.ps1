@@ -14,6 +14,7 @@ param (
 $workingDirectory = [System.IO.Path]::Combine("$PSScriptRoot", "..", "..")
 $localOpenApiJson = [System.IO.Path]::Combine($workingDirectory, "keycloak.openapi.json")
 $localOpenApiJsonCleaned = [System.IO.Path]::Combine($workingDirectory, "keycloak.openapi.clean.json")
+
 Push-Location $workingDirectory
 
 # Set input file
@@ -47,6 +48,10 @@ Pop-Location
 # Fix smaller issues from open API generator
 & node Build/openapi-generator/openapi-generator-fix-shortcoming.js FS.Keycloak.RestApiClient
 
+# Copy README.md
+Copy-Item README.md FS.Keycloak.RestApiClient/README.md
+
+# Build and publish NuGet package
 Build-Project -project FS.Keycloak.RestApiClient -version $version
 Publish-Nuget -project FS.Keycloak.RestApiClient/src/FS.Keycloak.RestApiClient -version $version -publshFolder $publshFolder
 Push-Nuget -project -publshFolder $publshFolder -serverUrl $nugetUrl -apiKey $apiKey
