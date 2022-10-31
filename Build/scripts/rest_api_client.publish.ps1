@@ -38,7 +38,7 @@ $content = $content -replace '("?description"?\s*:\s*)(.*)<(.*)>(.*)', '$1$2{$3}
 
 # Generate client
 Push-Location Build/openapi-generator
-& node_modules/.bin/openapi-generator-cli generate -c openapi-generator.config.json -g csharp-netcore --type-mappings date-span='TimeSpan' -i $localOpenApiJsonCleaned -o ../../FS.Keycloak.RestApiClient
+& node_modules/.bin/openapi-generator-cli generate -c openapi-generator.config.json -g csharp-netcore --template-dir templates --type-mappings date-span='TimeSpan' -i $localOpenApiJsonCleaned -o ../../FS.Keycloak.RestApiClient
 Pop-Location
 
 # Fix smaller issues from open API generator

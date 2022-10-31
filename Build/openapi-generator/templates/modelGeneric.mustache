@@ -129,7 +129,7 @@
     {{#hasOnlyReadOnly}}
         [JsonConstructorAttribute]
     {{/hasOnlyReadOnly}}
-        public {{classname}}({{#readWriteVars}}{{{datatypeWithEnum}}}{{#isEnum}}{{^isContainer}}{{^required}}?{{/required}}{{/isContainer}}{{/isEnum}} {{#lambda.camelcase_param}}{{name}}{{/lambda.camelcase_param}} = {{#defaultValue}}{{^isDateTime}}{{{defaultValue}}}{{/isDateTime}}{{#isDateTime}}default({{{datatypeWithEnum}}}){{/isDateTime}}{{/defaultValue}}{{^defaultValue}}default({{{datatypeWithEnum}}}{{#isEnum}}{{^isContainer}}{{^required}}?{{/required}}{{/isContainer}}{{/isEnum}}){{/defaultValue}}{{^-last}}, {{/-last}}{{/readWriteVars}}){{#parent}} : base({{#parentVars}}{{#lambda.camelcase_param}}{{name}}{{/lambda.camelcase_param}}{{^-last}}, {{/-last}}{{/parentVars}}){{/parent}}
+        public {{classname}}({{#vars}}{{^isReadOnly}}{{{datatypeWithEnum}}}{{#isEnum}}{{^isContainer}}{{^required}}{{^conditionalSerialization}}?{{/conditionalSerialization}}{{/required}}{{/isContainer}}{{/isEnum}}{{#conditionalSerialization}}{{#vendorExtensions.x-is-value-type}}?{{/vendorExtensions.x-is-value-type}}{{/conditionalSerialization}} {{#lambda.camelcase_param}}{{name}}{{/lambda.camelcase_param}} = {{#defaultValue}}{{^isDateTime}}{{{defaultValue}}}{{/isDateTime}}{{#isDateTime}}default({{{datatypeWithEnum}}}){{/isDateTime}}{{/defaultValue}}{{^defaultValue}}default({{{datatypeWithEnum}}}{{#isEnum}}{{^isContainer}}{{^required}}{{^conditionalSerialization}}?{{/conditionalSerialization}}{{/required}}{{/isContainer}}{{/isEnum}}{{#conditionalSerialization}}{{#vendorExtensions.x-is-value-type}}?{{/vendorExtensions.x-is-value-type}}{{/conditionalSerialization}}){{/defaultValue}}{{^-last}}, {{/-last}}{{/isReadOnly}}{{/vars}}){{#parent}} : base({{#parentVars}}{{#lambda.camelcase_param}}{{name}}{{/lambda.camelcase_param}}{{^-last}}, {{/-last}}{{/parentVars}}){{/parent}}
         {
             {{#vars}}
             {{^isInherited}}
@@ -238,7 +238,7 @@
         {{#deprecated}}
         [Obsolete]
         {{/deprecated}}
-        public {{{dataType}}} {{name}} { get; private set; }
+        public {{{dataType}}}{{#vendorExtensions.x-is-value-type}}?{{/vendorExtensions.x-is-value-type}} {{name}} { get; private set; }
 
         /// <summary>
         /// Returns false as {{name}} should not be serialized given that it's read-only.
@@ -257,7 +257,7 @@
         {{#deprecated}}
         [Obsolete]
         {{/deprecated}}
-        public {{{dataType}}} {{name}}
+        public {{{dataType}}}{{#vendorExtensions.x-is-value-type}}?{{/vendorExtensions.x-is-value-type}} {{name}}
         {
             get{ return _{{name}};}
             set
@@ -266,7 +266,7 @@
                 _flag{{name}} = true;
             }
         }
-        private {{{dataType}}} _{{name}};
+        private {{{dataType}}}{{#vendorExtensions.x-is-value-type}}?{{/vendorExtensions.x-is-value-type}} _{{name}};
         private bool _flag{{name}};
 
         /// <summary>
