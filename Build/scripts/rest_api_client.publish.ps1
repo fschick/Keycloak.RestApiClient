@@ -36,6 +36,9 @@ $content = [System.IO.File]::ReadAllText($localOpenApiJson)
 $content = $content -replace '("?description"?\s*:\s*)(.*)<(.*)>(.*)', '$1$2{$3}$4'
 [System.IO.File]::WriteAllText($localOpenApiJsonCleaned, $content)
 
+# Add humanized C# operation name
+& node Build/openapi-generator/openapi-generator-add-charp-action.js $localOpenApiJsonCleaned $localOpenApiJsonCleaned
+
 # Generate client
 Push-Location Build/openapi-generator
 & node_modules/.bin/openapi-generator-cli generate -c openapi-generator.config.json -g csharp-netcore --template-dir templates --type-mappings date-span='TimeSpan' -i $localOpenApiJsonCleaned -o ../../FS.Keycloak.RestApiClient
