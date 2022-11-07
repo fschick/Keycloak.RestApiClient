@@ -1,12 +1,12 @@
 <Project>
 
   <PropertyGroup>
-    <Product>Time Tracking Report Server</Product>
+    <Product>Keycloak Admin REST API client</Product>
     <Title>$(Product)</Title>
     <Description>$(Product)</Description>
     <Authors>Florian Schick</Authors>
     <Company>Schick Software Entwicklung</Company>
-    <Copyright>© Florian Schick, 2021-2022 all rights reserved</Copyright>
+    <Copyright>© Florian Schick, 2022 all rights reserved</Copyright>
     <Owners>$(Company)</Owners>
     <Summary>$(Description)</Summary>
     <Tags></Tags>
@@ -15,7 +15,7 @@
     <FileVersion>0.0.0.0</FileVersion>
     <AssemblyVersion>$(FileVersion)</AssemblyVersion>
 
-    <RepositoryUrl>https://github.com/fschick/TimeTracking.ReportServer.git</RepositoryUrl>
+    <RepositoryUrl>https://github.com/fschick/Keycloak.RestApiClient.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 

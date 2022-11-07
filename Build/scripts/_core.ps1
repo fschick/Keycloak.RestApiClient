@@ -108,8 +108,6 @@ function Publish-Project([String] $project, [String] $version, [String] $framewo
     if(!$?) {
         exit $LASTEXITCODE
     }
-
-    Remove-Item "$publshFolder/FS.TimeTracking.ReportServer.config.development.json" -ErrorAction Ignore
 }
 
 function Publish-Nuget([String] $project, [String] $version, [String] $publshFolder) {
