@@ -54,6 +54,6 @@ Copy-Item README.md FS.Keycloak.RestApiClient/README.md
 # Build and publish NuGet package
 Build-Project -project FS.Keycloak.RestApiClient -version $version
 Publish-Nuget -project FS.Keycloak.RestApiClient/src/FS.Keycloak.RestApiClient -version $version -publshFolder $publshFolder
-# Push-Nuget -project -publshFolder $publshFolder -serverUrl $nugetUrl -apiKey $apiKey
+Push-Nuget -project -publshFolder $publshFolder -serverUrl $nugetUrl -apiKey $apiKey
 
 Pop-Location
