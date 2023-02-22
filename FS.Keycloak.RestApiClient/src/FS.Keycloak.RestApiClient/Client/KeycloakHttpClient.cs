@@ -21,13 +21,22 @@ namespace FS.Keycloak.RestApiClient.Client
         public KeycloakHttpClient(string authServerUrl, string user, string password)
             : this(authServerUrl, user, password, new HttpClientHandler()) { }
 
+        public KeycloakHttpClient(string authServerUrl, string realm, string user, string password)
+            : this(authServerUrl, realm, user, password, new HttpClientHandler()) { }
+
         public KeycloakHttpClient(string authServerUrl, string user, string password, HttpMessageHandler handler)
             : this(authServerUrl, user, password, handler, true) { }
 
+        public KeycloakHttpClient(string authServerUrl, string realm, string user, string password, HttpMessageHandler handler)
+            : this(authServerUrl, realm, user, password, handler, true) { }
+
         public KeycloakHttpClient(string authServerUrl, string user, string password, HttpMessageHandler handler, bool disposeHandler)
+            : this(authServerUrl, "master", user, password, handler, disposeHandler) { }
+
+        public KeycloakHttpClient(string authServerUrl, string realm, string user, string password, HttpMessageHandler handler, bool disposeHandler)
             : base(handler, disposeHandler)
         {
-            _authTokenUrl = $"{authServerUrl}/realms/master/protocol/openid-connect/token";
+            _authTokenUrl = $"{authServerUrl}/realms/{realm}/protocol/openid-connect/token";
             _user = user;
             _password = password;
 
