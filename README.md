@@ -33,6 +33,49 @@ Install-Package Schick.Keycloak.RestApiClient
 
 ## Getting Started
 
+### Authentication
+
+You can select authentication flow either by the username and password
+or by providing client ID and client secret.
+
+Sample code with auth by username
+
+```csharp
+using FS.Keycloak.RestApiClient.Client;
+using System;
+using System.Threading.Tasks;
+
+namespace ConsoleApp1
+{
+    internal class Program
+    {
+        private static async Task Main(string[] args)
+        {
+            using var httpClient = new KeycloakHttpClient("<authServerUrl>", "<admin_user>", "<password>");
+        }
+    }
+}
+```
+
+Sample code with auth by client
+
+```csharp
+using FS.Keycloak.RestApiClient.Client;
+using System;
+using System.Threading.Tasks;
+
+namespace ConsoleApp1
+{
+    internal class Program
+    {
+        private static async Task Main(string[] args)
+        {
+            using var httpClient = new KeycloakClientHttpClient("<authServerUrl>", "<realm>",  "<client_id>", "<client_secret>");
+        }
+    }
+}
+```
+
 #### Method names
 
 Method names are humanized:
