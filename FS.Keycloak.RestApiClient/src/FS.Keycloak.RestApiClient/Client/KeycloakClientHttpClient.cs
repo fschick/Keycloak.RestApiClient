@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace FS.Keycloak.RestApiClient.Client
 {
-    public sealed class KeycloakHttpClient : HttpClient
+    public sealed class KeycloakClientHttpClient : HttpClient
     {
         private static readonly JsonSerializerSettings _jsonSerializerSettings = new JsonSerializerSettings { ContractResolver = new SnakeCaseContractResolver() };
         private readonly string _authTokenUrl;

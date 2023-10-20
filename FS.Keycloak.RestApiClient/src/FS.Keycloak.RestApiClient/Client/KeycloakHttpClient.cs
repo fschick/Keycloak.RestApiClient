@@ -10,35 +10,67 @@ namespace FS.Keycloak.RestApiClient.Client
 {
     public sealed class KeycloakHttpClient : HttpClient
     {
+        public enum AuthenticationFlow
+        {
+            ClientCredentials,
+            PasswordGrant
+        }
+
         private static readonly JsonSerializerSettings _jsonSerializerSettings = new JsonSerializerSettings { ContractResolver = new SnakeCaseContractResolver() };
+
         private readonly string _authTokenUrl;
-        private readonly string _user;
-        private readonly string _password;
+        private readonly Dictionary<string, string> _authParameters;
         private KeycloakApiToken _token;
 
         public string AuthServerUrl { get; }
 
-        public KeycloakHttpClient(string authServerUrl, string user, string password)
-            : this(authServerUrl, user, password, new HttpClientHandler()) { }
+        public KeycloakHttpClient(string authServerUrl,
+            string userOrClientId, string passwordOrClientSecret, AuthenticationFlow flow = AuthenticationFlow.PasswordGrant)
+            : this(authServerUrl, userOrClientId, passwordOrClientSecret, new HttpClientHandler(), flow) { }
 
-        public KeycloakHttpClient(string authServerUrl, string realm, string user, string password)
-            : this(authServerUrl, realm, user, password, new HttpClientHandler()) { }
+        public KeycloakHttpClient(string authServerUrl,
+            string realm, string userOrClientId, string passwordOrClientSecret, AuthenticationFlow flow = AuthenticationFlow.PasswordGrant)
+            : this(authServerUrl, realm, userOrClientId, passwordOrClientSecret, new HttpClientHandler(), flow) { }
 
-        public KeycloakHttpClient(string authServerUrl, string user, string password, HttpMessageHandler handler)
-            : this(authServerUrl, user, password, handler, true) { }
+        public KeycloakHttpClient(string authServerUrl,
+            string userOrClientId, string passwordOrClientSecret, HttpMessageHandler handler, AuthenticationFlow flow = AuthenticationFlow.PasswordGrant)
+            : this(authServerUrl, userOrClientId, passwordOrClientSecret, handler, true, flow) { }
 
-        public KeycloakHttpClient(string authServerUrl, string realm, string user, string password, HttpMessageHandler handler)
-            : this(authServerUrl, realm, user, password, handler, true) { }
+        public KeycloakHttpClient(string authServerUrl,
+            string realm, string userOrClientId, string passwordOrClientSecret, HttpMessageHandler handler, AuthenticationFlow flow = AuthenticationFlow.PasswordGrant)
+            : this(authServerUrl, realm, userOrClientId, passwordOrClientSecret, handler, true, flow) { }
 
-        public KeycloakHttpClient(string authServerUrl, string user, string password, HttpMessageHandler handler, bool disposeHandler)
-            : this(authServerUrl, "master", user, password, handler, disposeHandler) { }
+        public KeycloakHttpClient(string authServerUrl,
+            string userOrClientId, string passwordOrClientSecret, HttpMessageHandler handler, bool disposeHandler, AuthenticationFlow flow = AuthenticationFlow.PasswordGrant)
+            : this(authServerUrl, "master", userOrClientId, passwordOrClientSecret, handler, disposeHandler, flow) { }
 
-        public KeycloakHttpClient(string authServerUrl, string realm, string user, string password, HttpMessageHandler handler, bool disposeHandler)
+
+        public KeycloakHttpClient(string authServerUrl,
+            string realm, string userOrClientId, string passwordOrClientSecret, HttpMessageHandler handler, bool disposeHandler,
+            AuthenticationFlow flow = AuthenticationFlow.PasswordGrant)
             : base(handler, disposeHandler)
         {
             _authTokenUrl = $"{authServerUrl}/realms/{realm}/protocol/openid-connect/token";
-            _user = user;
-            _password = password;
+
+            if (flow == AuthenticationFlow.PasswordGrant)
+            {
+                _authParameters = new Dictionary<string, string>
+                {
+                    { "client_id", "admin-cli" },
+                    { "grant_type", "password" },
+                    { "username", userOrClientId },
+                    { "password", passwordOrClientSecret },
+                };
+            }
+            else
+            {
+                _authParameters = new Dictionary<string, string>
+                {
+                    { "grant_type", "client_credentials" },
+                    { "client_id", userOrClientId },
+                    { "client_secret", passwordOrClientSecret },
+                };
+            }
 
             AuthServerUrl = authServerUrl;
         }
@@ -58,16 +90,8 @@ namespace FS.Keycloak.RestApiClient.Client
 
         private async Task<KeycloakApiToken> GetToken(CancellationToken cancellationToken)
         {
-            var parameters = new Dictionary<string, string>
-            {
-                { "client_id", "admin-cli" },
-                { "grant_type", "password" },
-                { "username", _user },
-                { "password", _password },
-            };
-
-            var tokenRequest = new HttpRequestMessage(HttpMethod.Post, _authTokenUrl) { Content = new FormUrlEncodedContent(parameters) };
-            var response = await base.SendAsync(tokenRequest, cancellationToken);
+            var tokenRequest = new HttpRequestMessage(HttpMethod.Post, _authTokenUrl) { Content = new FormUrlEncodedContent(_authParameters) };
+            var response = await base.SendAsync(tokenRequest, cancellationToken); // todo handle error in authentication response
             var tokenJson = await response.Content.ReadAsStringAsync();
             var token = JsonConvert.DeserializeObject<KeycloakApiToken>(tokenJson, _jsonSerializerSettings);
             return token;
