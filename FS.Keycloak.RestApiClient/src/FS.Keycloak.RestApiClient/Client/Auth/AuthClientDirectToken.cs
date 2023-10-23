@@ -1,0 +1,24 @@
+using System.Net.Http.Headers;
+using Client;
+
+public class AuthClientDirectToken : HttpClient
+{
+    private string _token;
+
+    public AuthClientDirectToken(DirectToken flow,
+       HttpMessageHandler? handler = null, bool disposeHandler = true) : base(handler ?? new HttpClientHandler(), disposeHandler)
+    {
+        _token = flow.Token;
+    }
+
+    public override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+    {
+        AddAuthorizationHeader(request);
+        return await base.SendAsync(request, cancellationToken);
+    }
+
+    private void AddAuthorizationHeader(HttpRequestMessage request)
+    {
+        request.Headers.Authorization = new AuthenticationHeaderValue("bearer", _token);
+    }
+}
