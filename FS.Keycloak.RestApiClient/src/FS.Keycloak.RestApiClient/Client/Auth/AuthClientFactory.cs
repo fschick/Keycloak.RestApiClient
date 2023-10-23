@@ -1,10 +1,12 @@
+using System;
+using System.Net.Http;
 using FS.Keycloak.RestApiClient.Model;
 
 namespace FS.Keycloak.RestApiClient.Client.Auth
 {
     public class AuthClientFactory
     {
-        public static HttpClient Create<T>(T flow, HttpMessageHandler? handler = null, bool disposeHandler = true)
+        public static HttpClient Create<T>(T flow, HttpMessageHandler handler = null, bool disposeHandler = true)
         {
             if (typeof(T) == typeof(ClientCredentials))
             {

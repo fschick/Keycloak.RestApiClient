@@ -51,7 +51,13 @@ namespace ConsoleApp1
     {
         private static async Task Main(string[] args)
         {
-            using var httpClient = new KeycloakHttpClient("<authServerUrl>", "<admin_user>", "<password>");
+            using var httpClient = AuthClientFactory.Create(new PasswordGrant
+                {
+                    AuthUrl = "https://<keycloak-url>/auth",
+                    Realm = "<realm>",
+                    UserName = "<username>",
+                    Password = "<password>"
+                });
         }
     }
 }
@@ -70,7 +76,13 @@ namespace ConsoleApp1
     {
         private static async Task Main(string[] args)
         {
-            using var httpClient = new KeycloakClientHttpClient("<authServerUrl>", "<realm>",  "<client_id>", "<client_secret>");
+            using var httpClient = AuthClientFactory.Create(new ClientCredentials
+                {
+                    AuthUrl = "https://<keycloak-url>/auth",
+                    Realm = "<realm>",
+                    ClientId = "<clientid>",
+                    ClientSecret = "<client-secret>"
+                });
         }
     }
 }
@@ -98,7 +110,13 @@ namespace ConsoleApp1
     {
         private static async Task Main(string[] args)
         {
-            using var httpClient = new KeycloakHttpClient("<authServerUrl>", "<admin_user>", "<password>");
+            using var httpClient = AuthClientFactory.Create(new ClientCredentials
+                {
+                    AuthUrl = "https://<keycloak-url>/auth",
+                    Realm = "<realm>",
+                    ClientId = "<clientid>",
+                    ClientSecret = "<client-secret>"
+                });
             using var usersApi = ApiClientFactory.Create<UsersApi>(httpClient);
 
             var users = await usersApi.GetUsersAsync("MyRealm");

@@ -1,5 +1,6 @@
-﻿using FS.Keycloak.RestApiClient.Client.Auth;
-using FS.Keycloak.RestApiClient.Client;
+﻿using System;
+using System.Threading.Tasks;
+using FS.Keycloak.RestApiClient.Client.Auth;
 using FS.Keycloak.RestApiClient.Model;
 
 internal class Program

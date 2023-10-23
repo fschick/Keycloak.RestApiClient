@@ -1,6 +1,10 @@
+using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Threading;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 using FS.Keycloak.RestApiClient.Model;
 using FS.Keycloak.RestApiClient.Client;
@@ -9,13 +13,13 @@ namespace FS.Keycloak.RestApiClient.Client.Auth
 {
     public class AuthClientClientCredentials : HttpClient
     {
-        private KeycloakApiToken? _token;
+        private KeycloakApiToken _token;
         private readonly string _authTokenUrl;
-        private readonly Dictionary<string, string>? _parameters;
+        private readonly Dictionary<string, string> _parameters;
         private static readonly JsonSerializerSettings _jsonSerializerSettings = new JsonSerializerSettings { ContractResolver = new SnakeCaseContractResolver() };
 
         public AuthClientClientCredentials(ClientCredentials flow,
-           HttpMessageHandler? handler = null, bool disposeHandler = true) : base(handler ?? new HttpClientHandler(), disposeHandler)
+           HttpMessageHandler handler = null, bool disposeHandler = true) : base(handler ?? new HttpClientHandler(), disposeHandler)
         {
             _authTokenUrl = $"{flow.AuthUrl}/realms/{flow.Realm}/protocol/openid-connect/token";
             _parameters = new Dictionary<string, string>

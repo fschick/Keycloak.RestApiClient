@@ -1,4 +1,7 @@
+using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Threading;
+using System.Threading.Tasks;
 using FS.Keycloak.RestApiClient.Model;
 
 namespace FS.Keycloak.RestApiClient.Client.Auth
@@ -8,7 +11,7 @@ namespace FS.Keycloak.RestApiClient.Client.Auth
         private string _token;
 
         public AuthClientDirectToken(DirectToken flow,
-           HttpMessageHandler? handler = null, bool disposeHandler = true) : base(handler ?? new HttpClientHandler(), disposeHandler)
+           HttpMessageHandler handler = null, bool disposeHandler = true) : base(handler ?? new HttpClientHandler(), disposeHandler)
         {
             _token = flow.Token;
         }
