@@ -1,24 +1,27 @@
 using System.Net.Http.Headers;
-using Client;
+using FS.Keycloak.RestApiClient.Model;
 
-public class AuthClientDirectToken : HttpClient
+namespace FS.Keycloak.RestApiClient.Client.Auth
 {
-    private string _token;
-
-    public AuthClientDirectToken(DirectToken flow,
-       HttpMessageHandler? handler = null, bool disposeHandler = true) : base(handler ?? new HttpClientHandler(), disposeHandler)
+    public class AuthClientDirectToken : HttpClient
     {
-        _token = flow.Token;
-    }
+        private string _token;
 
-    public override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
-    {
-        AddAuthorizationHeader(request);
-        return await base.SendAsync(request, cancellationToken);
-    }
+        public AuthClientDirectToken(DirectToken flow,
+           HttpMessageHandler? handler = null, bool disposeHandler = true) : base(handler ?? new HttpClientHandler(), disposeHandler)
+        {
+            _token = flow.Token;
+        }
 
-    private void AddAuthorizationHeader(HttpRequestMessage request)
-    {
-        request.Headers.Authorization = new AuthenticationHeaderValue("bearer", _token);
+        public override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            AddAuthorizationHeader(request);
+            return await base.SendAsync(request, cancellationToken);
+        }
+
+        private void AddAuthorizationHeader(HttpRequestMessage request)
+        {
+            request.Headers.Authorization = new AuthenticationHeaderValue("bearer", _token);
+        }
     }
 }
