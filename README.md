@@ -33,6 +33,61 @@ Install-Package Schick.Keycloak.RestApiClient
 
 ## Getting Started
 
+### Authentication
+
+You can select authentication flow either by the username and password
+or by providing client ID and client secret.
+
+Sample code with auth by username
+
+```csharp
+using FS.Keycloak.RestApiClient.Client;
+using System;
+using System.Threading.Tasks;
+
+namespace ConsoleApp1
+{
+    internal class Program
+    {
+        private static async Task Main(string[] args)
+        {
+            using var httpClient = AuthClientFactory.Create(new PasswordGrant
+                {
+                    AuthUrl = "https://<keycloak-url>/auth",
+                    Realm = "<realm>",
+                    UserName = "<username>",
+                    Password = "<password>"
+                });
+        }
+    }
+}
+```
+
+Sample code with auth by client
+
+```csharp
+using FS.Keycloak.RestApiClient.Client;
+using System;
+using System.Threading.Tasks;
+
+namespace ConsoleApp1
+{
+    internal class Program
+    {
+        private static async Task Main(string[] args)
+        {
+            using var httpClient = AuthClientFactory.Create(new ClientCredentials
+                {
+                    AuthUrl = "https://<keycloak-url>/auth",
+                    Realm = "<realm>",
+                    ClientId = "<clientid>",
+                    ClientSecret = "<client-secret>"
+                });
+        }
+    }
+}
+```
+
 #### Method names
 
 Method names are humanized:
@@ -55,7 +110,13 @@ namespace ConsoleApp1
     {
         private static async Task Main(string[] args)
         {
-            using var httpClient = new KeycloakHttpClient("<authServerUrl>", "<admin_user>", "<password>");
+            using var httpClient = AuthClientFactory.Create(new ClientCredentials
+                {
+                    AuthUrl = "https://<keycloak-url>/auth",
+                    Realm = "<realm>",
+                    ClientId = "<clientid>",
+                    ClientSecret = "<client-secret>"
+                });
             using var usersApi = ApiClientFactory.Create<UsersApi>(httpClient);
 
             var users = await usersApi.GetUsersAsync("MyRealm");
