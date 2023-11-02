@@ -1,24 +1,25 @@
+using FS.Keycloak.RestApiClient.Model;
 using System;
 using System.Net.Http;
-using FS.Keycloak.RestApiClient.Model;
 
 namespace FS.Keycloak.RestApiClient.Client.Auth
 {
     public class AuthClientFactory
     {
-        public static HttpClient Create<T>(T flow, HttpMessageHandler handler = null, bool disposeHandler = true)
+        public static HttpClient Create<TAuthenticationFlow>(TAuthenticationFlow authenticationFlow, HttpMessageHandler handler = null, bool disposeHandler = true)
+            where TAuthenticationFlow : AuthenticationFlow
         {
-            if (typeof(T) == typeof(ClientCredentials))
+            if (typeof(TAuthenticationFlow) == typeof(ClientCredentials))
             {
-                return new AuthClientClientCredentials(flow as ClientCredentials, handler, disposeHandler);
+                return new AuthClientClientCredentials(authenticationFlow as ClientCredentials, handler, disposeHandler);
             }
-            else if (typeof(T) == typeof(PasswordGrant))
+            else if (typeof(TAuthenticationFlow) == typeof(PasswordGrant))
             {
-                return new AuthClientPasswordGrant(flow as PasswordGrant, handler, disposeHandler);
+                return new AuthClientPasswordGrant(authenticationFlow as PasswordGrant, handler, disposeHandler);
             }
-            else if (typeof(T) == typeof(DirectToken))
+            else if (typeof(TAuthenticationFlow) == typeof(DirectToken))
             {
-                return new AuthClientDirectToken(flow as DirectToken, handler, disposeHandler);
+                return new AuthClientDirectToken(authenticationFlow as DirectToken, handler, disposeHandler);
             }
             else
             {

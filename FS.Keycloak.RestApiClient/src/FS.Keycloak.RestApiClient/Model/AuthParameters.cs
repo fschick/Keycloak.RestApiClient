@@ -1,10 +1,6 @@
-using Newtonsoft.Json;
-using System;
-
 namespace FS.Keycloak.RestApiClient.Model
-
 {
-    public class BaseFlow
+    public abstract class AuthenticationFlow
     {
         public string AuthUrl { get; set; }
         private string _realm;
@@ -12,24 +8,25 @@ namespace FS.Keycloak.RestApiClient.Model
         public string Realm
         {
             get => _realm ?? "master";
-            set { _realm = value; }
+            set => _realm = value;
         }
     }
 
-    public class PasswordGrant : BaseFlow
+    public class PasswordGrant : AuthenticationFlow
     {
-
         public string UserName { get; set; }
+
         public string Password { get; set; }
     }
 
-    public class ClientCredentials : BaseFlow
+    public class ClientCredentials : AuthenticationFlow
     {
         public string ClientId { get; set; }
+
         public string ClientSecret { get; set; }
     }
 
-    public class DirectToken : BaseFlow
+    public class DirectToken : AuthenticationFlow
     {
         public string Token { get; set; }
     }

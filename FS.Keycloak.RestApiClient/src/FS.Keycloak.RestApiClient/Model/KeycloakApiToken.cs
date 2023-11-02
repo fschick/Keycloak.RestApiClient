@@ -7,15 +7,9 @@ namespace FS.Keycloak.RestApiClient.Model
     {
         private readonly DateTime _creationTime;
 
-        public KeycloakApiToken(
-            string accessToken,
-            int expiresIn,
-            int refreshExpiresIn,
-            string refreshToken,
-            string tokenType, int notBeforePolicy,
-            string sessionState,
-            string scope
-        )
+        public bool IsExpired => DateTime.UtcNow - _creationTime > ExpiresIn;
+
+        public KeycloakApiToken(string accessToken, int expiresIn, int refreshExpiresIn, string refreshToken, string tokenType, int notBeforePolicy, string sessionState, string scope)
         {
             _creationTime = DateTime.UtcNow;
             AccessToken = accessToken;
@@ -28,17 +22,21 @@ namespace FS.Keycloak.RestApiClient.Model
             Scope = scope;
         }
 
-        public bool IsExpired => DateTime.UtcNow - _creationTime > ExpiresIn;
         public string AccessToken { get; }
+
         public TimeSpan ExpiresIn { get; }
+
         public int RefreshExpiresIn { get; }
+
         public string RefreshToken { get; }
+
         public string TokenType { get; }
 
         [JsonProperty("not-before-policy")]
         public int NotBeforePolicy { get; }
 
         public string SessionState { get; }
+
         public string Scope { get; }
     }
 }

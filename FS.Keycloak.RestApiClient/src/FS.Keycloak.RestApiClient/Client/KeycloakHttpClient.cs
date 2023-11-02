@@ -25,23 +25,23 @@ namespace FS.Keycloak.RestApiClient.Client
 
         [Obsolete("Use AuthClientFactory with explicit authentication flow parameter.")]
         public KeycloakHttpClient(string authServerUrl, string realm, string user, string password)
-                    : this(authServerUrl, realm, user, password, new HttpClientHandler()) { }
+            : this(authServerUrl, realm, user, password, new HttpClientHandler()) { }
 
         [Obsolete("Use AuthClientFactory with explicit authentication flow parameter.")]
         public KeycloakHttpClient(string authServerUrl, string user, string password, HttpMessageHandler handler)
-                    : this(authServerUrl, user, password, handler, true) { }
+            : this(authServerUrl, user, password, handler, true) { }
 
         [Obsolete("Use AuthClientFactory with explicit authentication flow parameter.")]
         public KeycloakHttpClient(string authServerUrl, string realm, string user, string password, HttpMessageHandler handler)
-                    : this(authServerUrl, realm, user, password, handler, true) { }
+            : this(authServerUrl, realm, user, password, handler, true) { }
 
         [Obsolete("Use AuthClientFactory with explicit authentication flow parameter.")]
         public KeycloakHttpClient(string authServerUrl, string user, string password, HttpMessageHandler handler, bool disposeHandler)
-                    : this(authServerUrl, "master", user, password, handler, disposeHandler) { }
+            : this(authServerUrl, "master", user, password, handler, disposeHandler) { }
 
         [Obsolete("Use AuthClientFactory with explicit authentication flow parameter.")]
         public KeycloakHttpClient(string authServerUrl, string realm, string user, string password, HttpMessageHandler handler, bool disposeHandler)
-                    : base(handler, disposeHandler)
+            : base(handler, disposeHandler)
         {
             _authTokenUrl = $"{authServerUrl}/realms/{realm}/protocol/openid-connect/token";
             _user = user;
@@ -60,6 +60,7 @@ namespace FS.Keycloak.RestApiClient.Client
         {
             if (_token == null || _token.IsExpired)
                 _token = await GetToken(cancellationToken);
+
             request.Headers.Authorization = new AuthenticationHeaderValue("bearer", _token.AccessToken);
         }
 
