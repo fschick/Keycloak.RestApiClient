@@ -9,21 +9,16 @@ namespace FS.Keycloak.RestApiClient.Client.Auth
         public static HttpClient Create<TAuthenticationFlow>(TAuthenticationFlow authenticationFlow, HttpMessageHandler handler = null, bool disposeHandler = true)
             where TAuthenticationFlow : AuthenticationFlow
         {
-            if (typeof(TAuthenticationFlow) == typeof(ClientCredentials))
+            switch (authenticationFlow)
             {
-                return new AuthClientClientCredentials(authenticationFlow as ClientCredentials, handler, disposeHandler);
-            }
-            else if (typeof(TAuthenticationFlow) == typeof(PasswordGrant))
-            {
-                return new AuthClientPasswordGrant(authenticationFlow as PasswordGrant, handler, disposeHandler);
-            }
-            else if (typeof(TAuthenticationFlow) == typeof(DirectToken))
-            {
-                return new AuthClientDirectToken(authenticationFlow as DirectToken, handler, disposeHandler);
-            }
-            else
-            {
-                throw new ArgumentException("Unknown authentication flow parameters");
+                case ClientCredentials clientCredentials:
+                    return new AuthClientClientCredentials(clientCredentials, handler, disposeHandler);
+                case PasswordGrant passwordGrant:
+                    return new AuthClientPasswordGrant(passwordGrant, handler, disposeHandler);
+                case DirectToken directToken:
+                    return new AuthClientDirectToken(directToken, handler, disposeHandler);
+                default:
+                    throw new ArgumentException("Unknown authentication flow parameters");
             }
         }
     }
