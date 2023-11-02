@@ -295,6 +295,18 @@ __pycache__/
 *.xsd.cs
 
 # User added stuff
+.openapi-generator/
 /keycloak.openapi.json
 /keycloak.openapi.clean.json
-/FS.Keycloak.RestApiClient
+/FS.Keycloak.RestApiClient/.gitignore
+/FS.Keycloak.RestApiClient/.openapi-generator-ignore
+/FS.Keycloak.RestApiClient/FS.Keycloak.RestApiClient.sln
+/FS.Keycloak.RestApiClient/README.md
+/FS.Keycloak.RestApiClient/appveyor.yml
+/FS.Keycloak.RestApiClient/docs
+/FS.Keycloak.RestApiClient/git_push.sh
+/FS.Keycloak.RestApiClient/src/FS.Keycloak.RestApiClient/Api
+/FS.Keycloak.RestApiClient/src/FS.Keycloak.RestApiClient/Client
+/FS.Keycloak.RestApiClient/src/FS.Keycloak.RestApiClient/Model
+/FS.Keycloak.RestApiClient/src/FS.Keycloak.RestApiClient/FS.Keycloak.RestApiClient.csproj
+/FS.Keycloak.RestApiClient/src/FS.Keycloak.RestApiClient.Test
