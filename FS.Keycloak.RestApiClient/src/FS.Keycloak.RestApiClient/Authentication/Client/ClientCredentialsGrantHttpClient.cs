@@ -1,6 +1,5 @@
 using FS.Keycloak.RestApiClient.Authentication.Client;
 using FS.Keycloak.RestApiClient.Authentication.Flow;
-using FS.Keycloak.RestApiClient.Client;
 using FS.Keycloak.RestApiClient.Model;
 using Newtonsoft.Json;
 using System;
@@ -14,17 +13,14 @@ using System.Threading.Tasks;
 
 namespace FS.Keycloak.RestApiClient.Authentication.Client
 {
-    public class ClientCredentialsGrantHttpClient : HttpClient
+    public class ClientCredentialsGrantHttpClient : AuthenticationHttpClient
     {
         private KeycloakApiToken _token;
-        private readonly string _authTokenUrl;
         private readonly Dictionary<string, string> _parameters;
-        private static readonly JsonSerializerSettings _jsonSerializerSettings = new JsonSerializerSettings { ContractResolver = new SnakeCaseContractResolver() };
 
         public ClientCredentialsGrantHttpClient(ClientCredentialsFlow flow, HttpMessageHandler handler = null, bool disposeHandler = true)
-            : base(handler ?? new HttpClientHandler(), disposeHandler)
+            : base(flow, handler ?? new HttpClientHandler(), disposeHandler)
         {
-            _authTokenUrl = $"{flow.AuthUrl}/realms/{flow.Realm}/protocol/openid-connect/token";
             _parameters = new Dictionary<string, string>
             {
                     { "grant_type", "client_credentials" },
@@ -49,13 +45,13 @@ namespace FS.Keycloak.RestApiClient.Authentication.Client
 
         private async Task<KeycloakApiToken> GetToken(CancellationToken cancellationToken)
         {
-            var tokenRequest = new HttpRequestMessage(HttpMethod.Post, _authTokenUrl) { Content = new FormUrlEncodedContent(_parameters) };
+            var tokenRequest = new HttpRequestMessage(HttpMethod.Post, AuthTokenUrl) { Content = new FormUrlEncodedContent(_parameters) };
             var response = await base.SendAsync(tokenRequest, cancellationToken);
             if (response.StatusCode != HttpStatusCode.OK)
                 throw new Exception($"Client credentials authentication failed with code: {response.StatusCode}");
 
             var tokenJson = await response.Content.ReadAsStringAsync();
-            var token = JsonConvert.DeserializeObject<KeycloakApiToken>(tokenJson, _jsonSerializerSettings);
+            var token = JsonConvert.DeserializeObject<KeycloakApiToken>(tokenJson, KeycloakJsonSerializerSettings);
             return token;
         }
     }

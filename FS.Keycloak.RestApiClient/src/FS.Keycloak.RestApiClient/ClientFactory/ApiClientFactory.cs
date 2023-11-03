@@ -1,16 +1,17 @@
-﻿using FS.Keycloak.RestApiClient.Client;
+﻿using FS.Keycloak.RestApiClient.Authentication.Client;
+using FS.Keycloak.RestApiClient.Client;
 using System;
 
 namespace FS.Keycloak.RestApiClient.ClientFactory
 {
     public class ApiClientFactory
     {
-        public static TApiClient Create<TApiClient>(KeycloakHttpClient httpClient) where TApiClient : IApiAccessor
+        public static TApiClient Create<TApiClient>(AuthenticationHttpClient httpClient) where TApiClient : IApiAccessor
             => (TApiClient)Activator
                 .CreateInstance(
                     typeof(TApiClient),
                     httpClient,
-                    new Configuration { BasePath = $"{httpClient.AuthServerUrl}/admin/realms" },
+                    new Configuration { BasePath = $"{httpClient.KeycloakUrl}/admin/realms" },
                     null
                 );
     }

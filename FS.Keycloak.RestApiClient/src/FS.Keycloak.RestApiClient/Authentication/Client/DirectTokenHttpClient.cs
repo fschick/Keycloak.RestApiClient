@@ -9,12 +9,12 @@ using System.Threading.Tasks;
 
 namespace FS.Keycloak.RestApiClient.Authentication.Client
 {
-    public class DirectTokenHttpClient : HttpClient
+    public class DirectTokenHttpClient : AuthenticationHttpClient
     {
         private readonly string _token;
 
         public DirectTokenHttpClient(DirectTokenFlow flow, HttpMessageHandler handler = null, bool disposeHandler = true)
-            : base(handler ?? new HttpClientHandler(), disposeHandler)
+            : base(flow, handler ?? new HttpClientHandler(), disposeHandler)
             => _token = flow.Token;
 
         public override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
