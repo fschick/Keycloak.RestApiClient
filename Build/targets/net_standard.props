@@ -8,4 +8,11 @@
     <NoWarn>1701;1702;IDE0079</NoWarn>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="IDisposableAnalyzers" Version="4.0.7">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
 </Project>

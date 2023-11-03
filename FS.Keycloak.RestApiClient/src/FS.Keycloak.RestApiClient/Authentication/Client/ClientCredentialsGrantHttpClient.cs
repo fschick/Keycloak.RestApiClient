@@ -18,8 +18,11 @@ namespace FS.Keycloak.RestApiClient.Authentication.Client
         private KeycloakApiToken _token;
         private readonly Dictionary<string, string> _parameters;
 
-        public ClientCredentialsGrantHttpClient(ClientCredentialsFlow flow, HttpMessageHandler handler = null, bool disposeHandler = true)
-            : base(flow, handler ?? new HttpClientHandler(), disposeHandler)
+        public ClientCredentialsGrantHttpClient(AuthenticationFlow flow)
+            : base(flow) { }
+
+        public ClientCredentialsGrantHttpClient(ClientCredentialsFlow flow, HttpMessageHandler handler, bool disposeHandler)
+            : base(flow, handler, disposeHandler)
         {
             _parameters = new Dictionary<string, string>
             {
@@ -45,14 +48,19 @@ namespace FS.Keycloak.RestApiClient.Authentication.Client
 
         private async Task<KeycloakApiToken> GetToken(CancellationToken cancellationToken)
         {
-            var tokenRequest = new HttpRequestMessage(HttpMethod.Post, AuthTokenUrl) { Content = new FormUrlEncodedContent(_parameters) };
-            var response = await base.SendAsync(tokenRequest, cancellationToken);
-            if (response.StatusCode != HttpStatusCode.OK)
-                throw new Exception($"Client credentials authentication failed with code: {response.StatusCode}");
+            using (var tokenRequest = new HttpRequestMessage(HttpMethod.Post, AuthTokenUrl))
+            {
+                tokenRequest.Content = new FormUrlEncodedContent(_parameters);
+                using (var response = await base.SendAsync(tokenRequest, cancellationToken))
+                {
+                    if (response.StatusCode != HttpStatusCode.OK)
+                        throw new Exception($"Client credentials authentication failed with code: {response.StatusCode}");
 
-            var tokenJson = await response.Content.ReadAsStringAsync();
-            var token = JsonConvert.DeserializeObject<KeycloakApiToken>(tokenJson, KeycloakJsonSerializerSettings);
-            return token;
+                    var tokenJson = await response.Content.ReadAsStringAsync();
+                    var token = JsonConvert.DeserializeObject<KeycloakApiToken>(tokenJson, KeycloakJsonSerializerSettings);
+                    return token;
+                }
+            }
         }
     }
 }

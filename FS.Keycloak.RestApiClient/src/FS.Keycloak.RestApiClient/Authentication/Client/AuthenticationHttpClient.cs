@@ -23,6 +23,9 @@ namespace FS.Keycloak.RestApiClient.Authentication.Client
         /// </summary>
         public string AuthTokenUrl { get; }
 
+        protected AuthenticationHttpClient(AuthenticationFlow flow)
+            : this(flow, new HttpClientHandler(), true) { }
+
         protected AuthenticationHttpClient(AuthenticationFlow flow, HttpMessageHandler handler, bool disposeHandler)
             : base(handler ?? throw new ArgumentNullException(nameof(handler)), disposeHandler)
         {

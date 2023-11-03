@@ -13,8 +13,11 @@ namespace FS.Keycloak.RestApiClient.Authentication.Client
     {
         private readonly string _token;
 
-        public DirectTokenHttpClient(DirectTokenFlow flow, HttpMessageHandler handler = null, bool disposeHandler = true)
-            : base(flow, handler ?? new HttpClientHandler(), disposeHandler)
+        public DirectTokenHttpClient(AuthenticationFlow flow)
+            : base(flow) { }
+
+        public DirectTokenHttpClient(DirectTokenFlow flow, HttpMessageHandler handler, bool disposeHandler)
+            : base(flow, handler, disposeHandler)
             => _token = flow.Token;
 
         public override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)

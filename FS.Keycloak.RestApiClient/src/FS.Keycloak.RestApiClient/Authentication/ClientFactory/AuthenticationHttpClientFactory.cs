@@ -8,7 +8,11 @@ namespace FS.Keycloak.RestApiClient.Authentication.ClientFactory
 {
     public class AuthenticationHttpClientFactory
     {
-        public static HttpClient Create<TAuthenticationFlow>(TAuthenticationFlow authenticationFlow, HttpMessageHandler handler = null, bool disposeHandler = true)
+        public static AuthenticationHttpClient Create<TAuthenticationFlow>(TAuthenticationFlow authenticationFlow)
+            where TAuthenticationFlow : AuthenticationFlow
+            => Create(authenticationFlow, new HttpClientHandler(), true);
+
+        public static AuthenticationHttpClient Create<TAuthenticationFlow>(TAuthenticationFlow authenticationFlow, HttpMessageHandler handler, bool disposeHandler)
             where TAuthenticationFlow : AuthenticationFlow
         {
             switch (authenticationFlow)
