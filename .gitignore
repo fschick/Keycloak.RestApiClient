@@ -309,4 +309,7 @@ __pycache__/
 /FS.Keycloak.RestApiClient/src/FS.Keycloak.RestApiClient/Client
 /FS.Keycloak.RestApiClient/src/FS.Keycloak.RestApiClient/Model
 /FS.Keycloak.RestApiClient/src/FS.Keycloak.RestApiClient/FS.Keycloak.RestApiClient.csproj
-/FS.Keycloak.RestApiClient/src/FS.Keycloak.RestApiClient.Test
+/FS.Keycloak.RestApiClient/src/FS.Keycloak.RestApiClient.Test/Api
+/FS.Keycloak.RestApiClient/src/FS.Keycloak.RestApiClient.Test/Model
+/FS.Keycloak.RestApiClient/src/FS.Keycloak.RestApiClient.Test/FS.Keycloak.RestApiClient.Test.csproj
+/FS.Keycloak.RestApiClient/src/FS.Keycloak.RestApiClient.Test/Authentication/AuthenticationTests.data.json
