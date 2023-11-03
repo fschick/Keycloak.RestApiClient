@@ -1,3 +1,6 @@
+using FS.Keycloak.RestApiClient.Authentication.Client;
+using FS.Keycloak.RestApiClient.Authentication.Flow;
+using FS.Keycloak.RestApiClient.Client;
 using FS.Keycloak.RestApiClient.Model;
 using Newtonsoft.Json;
 using System;
@@ -8,25 +11,25 @@ using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace FS.Keycloak.RestApiClient.Client.Auth
+
+namespace FS.Keycloak.RestApiClient.Authentication.Client
 {
-    public class AuthClientPasswordGrant : HttpClient
+    public class ClientCredentialsGrantHttpClient : HttpClient
     {
         private KeycloakApiToken _token;
         private readonly string _authTokenUrl;
         private readonly Dictionary<string, string> _parameters;
         private static readonly JsonSerializerSettings _jsonSerializerSettings = new JsonSerializerSettings { ContractResolver = new SnakeCaseContractResolver() };
 
-        public AuthClientPasswordGrant(PasswordGrant flow, HttpMessageHandler handler = null, bool disposeHandler = true)
+        public ClientCredentialsGrantHttpClient(ClientCredentialsFlow flow, HttpMessageHandler handler = null, bool disposeHandler = true)
             : base(handler ?? new HttpClientHandler(), disposeHandler)
         {
             _authTokenUrl = $"{flow.AuthUrl}/realms/{flow.Realm}/protocol/openid-connect/token";
             _parameters = new Dictionary<string, string>
             {
-                { "client_id", "admin-cli" },
-                { "grant_type", "password" },
-                { "username", flow.UserName },
-                { "password", flow.Password },
+                    { "grant_type", "client_credentials" },
+                    { "client_id", flow.ClientId },
+                    { "client_secret", flow.ClientSecret },
             };
         }
 
@@ -49,11 +52,21 @@ namespace FS.Keycloak.RestApiClient.Client.Auth
             var tokenRequest = new HttpRequestMessage(HttpMethod.Post, _authTokenUrl) { Content = new FormUrlEncodedContent(_parameters) };
             var response = await base.SendAsync(tokenRequest, cancellationToken);
             if (response.StatusCode != HttpStatusCode.OK)
-                throw new Exception($"Username and password authentication failed with code: {response.StatusCode}");
+                throw new Exception($"Client credentials authentication failed with code: {response.StatusCode}");
 
             var tokenJson = await response.Content.ReadAsStringAsync();
             var token = JsonConvert.DeserializeObject<KeycloakApiToken>(tokenJson, _jsonSerializerSettings);
             return token;
         }
+    }
+}
+
+namespace FS.Keycloak.RestApiClient.Client.Auth
+{
+    [Obsolete("Use ClientCredentialsGrantHttpClient instead.")]
+    public class AuthClientClientCredentials : ClientCredentialsGrantHttpClient
+    {
+        public AuthClientClientCredentials(ClientCredentials flow, HttpMessageHandler handler = null, bool disposeHandler = true)
+            : base(flow, handler, disposeHandler) { }
     }
 }

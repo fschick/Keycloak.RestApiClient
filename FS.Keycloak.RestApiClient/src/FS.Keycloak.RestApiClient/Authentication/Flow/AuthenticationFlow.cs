@@ -1,4 +1,4 @@
-namespace FS.Keycloak.RestApiClient.Model
+namespace FS.Keycloak.RestApiClient.Authentication.Flow
 {
     public abstract class AuthenticationFlow
     {

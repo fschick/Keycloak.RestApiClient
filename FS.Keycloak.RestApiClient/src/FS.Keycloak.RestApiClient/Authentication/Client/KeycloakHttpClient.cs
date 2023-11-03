@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace FS.Keycloak.RestApiClient.Client
 {
+    [Obsolete("Use AuthenticationClientFactory with explicit authentication flow parameter.")]
     public sealed class KeycloakHttpClient : HttpClient
     {
         private static readonly JsonSerializerSettings _jsonSerializerSettings = new JsonSerializerSettings { ContractResolver = new SnakeCaseContractResolver() };
@@ -19,27 +20,27 @@ namespace FS.Keycloak.RestApiClient.Client
 
         public string AuthServerUrl { get; }
 
-        [Obsolete("Use AuthClientFactory with explicit authentication flow parameter.")]
+        [Obsolete("Use AuthenticationClientFactory with explicit authentication flow parameter.")]
         public KeycloakHttpClient(string authServerUrl, string user, string password)
             : this(authServerUrl, user, password, new HttpClientHandler()) { }
 
-        [Obsolete("Use AuthClientFactory with explicit authentication flow parameter.")]
+        [Obsolete("Use AuthenticationClientFactory with explicit authentication flow parameter.")]
         public KeycloakHttpClient(string authServerUrl, string realm, string user, string password)
             : this(authServerUrl, realm, user, password, new HttpClientHandler()) { }
 
-        [Obsolete("Use AuthClientFactory with explicit authentication flow parameter.")]
+        [Obsolete("Use AuthenticationClientFactory with explicit authentication flow parameter.")]
         public KeycloakHttpClient(string authServerUrl, string user, string password, HttpMessageHandler handler)
             : this(authServerUrl, user, password, handler, true) { }
 
-        [Obsolete("Use AuthClientFactory with explicit authentication flow parameter.")]
+        [Obsolete("Use AuthenticationClientFactory with explicit authentication flow parameter.")]
         public KeycloakHttpClient(string authServerUrl, string realm, string user, string password, HttpMessageHandler handler)
             : this(authServerUrl, realm, user, password, handler, true) { }
 
-        [Obsolete("Use AuthClientFactory with explicit authentication flow parameter.")]
+        [Obsolete("Use AuthenticationClientFactory with explicit authentication flow parameter.")]
         public KeycloakHttpClient(string authServerUrl, string user, string password, HttpMessageHandler handler, bool disposeHandler)
             : this(authServerUrl, "master", user, password, handler, disposeHandler) { }
 
-        [Obsolete("Use AuthClientFactory with explicit authentication flow parameter.")]
+        [Obsolete("Use AuthenticationClientFactory with explicit authentication flow parameter.")]
         public KeycloakHttpClient(string authServerUrl, string realm, string user, string password, HttpMessageHandler handler, bool disposeHandler)
             : base(handler, disposeHandler)
         {
