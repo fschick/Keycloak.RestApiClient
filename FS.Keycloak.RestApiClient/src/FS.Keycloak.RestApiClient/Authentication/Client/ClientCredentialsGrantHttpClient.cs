@@ -10,7 +10,6 @@ using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 
-
 namespace FS.Keycloak.RestApiClient.Authentication.Client
 {
     public class ClientCredentialsGrantHttpClient : AuthenticationHttpClient
@@ -30,6 +29,9 @@ namespace FS.Keycloak.RestApiClient.Authentication.Client
                     { "client_id", flow.ClientId },
                     { "client_secret", flow.ClientSecret },
             };
+
+            if (!string.IsNullOrWhiteSpace(flow.Scope))
+                _parameters.Add("scope", flow.Scope);
         }
 
         public override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)

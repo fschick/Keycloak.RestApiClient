@@ -30,6 +30,9 @@ namespace FS.Keycloak.RestApiClient.Authentication.Client
                 { "username", flow.UserName },
                 { "password", flow.Password },
             };
+
+            if (!string.IsNullOrWhiteSpace(flow.Scope))
+                _parameters.Add("scope", flow.Scope);
         }
 
         public override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
