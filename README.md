@@ -33,62 +33,7 @@ Install-Package Schick.Keycloak.RestApiClient
 
 ## Getting Started
 
-### Authentication
-
-You can select authentication flow either by the username and password
-or by providing client ID and client secret.
-
-Sample code with auth by username
-
-```csharp
-using FS.Keycloak.RestApiClient.Client;
-using System;
-using System.Threading.Tasks;
-
-namespace ConsoleApp1
-{
-    internal class Program
-    {
-        private static async Task Main(string[] args)
-        {
-            using var httpClient = AuthClientFactory.Create(new PasswordGrant
-                {
-                    AuthUrl = "https://<keycloak-url>/auth",
-                    Realm = "<realm>",
-                    UserName = "<username>",
-                    Password = "<password>"
-                });
-        }
-    }
-}
-```
-
-Sample code with auth by client
-
-```csharp
-using FS.Keycloak.RestApiClient.Client;
-using System;
-using System.Threading.Tasks;
-
-namespace ConsoleApp1
-{
-    internal class Program
-    {
-        private static async Task Main(string[] args)
-        {
-            using var httpClient = AuthClientFactory.Create(new ClientCredentials
-                {
-                    AuthUrl = "https://<keycloak-url>/auth",
-                    Realm = "<realm>",
-                    ClientId = "<clientid>",
-                    ClientSecret = "<client-secret>"
-                });
-        }
-    }
-}
-```
-
-#### Method names
+### Method names
 
 Method names are humanized:
 
@@ -96,34 +41,56 @@ Method names are humanized:
 
 `GET` on path `/{realm}/identity-provider/providers/{provider_id}` becomes `GetIdentityProviderProvidersByProviderId(Async)`
 
+### Authentication
+
+You can select authentication flow either by the username and password or by providing client ID and client secret.
+
 ### Sample code
+
+With authentication by username/password
 
 ```csharp
 using FS.Keycloak.RestApiClient.Api;
-using FS.Keycloak.RestApiClient.Client;
-using System;
-using System.Threading.Tasks;
+using FS.Keycloak.RestApiClient.Authentication.ClientFactory;
+using FS.Keycloak.RestApiClient.Authentication.Flow;
+using FS.Keycloak.RestApiClient.ClientFactory;
 
-namespace ConsoleApp1
+var credentials = new PasswordGrantFlow
 {
-    internal class Program
-    {
-        private static async Task Main(string[] args)
-        {
-            using var httpClient = AuthClientFactory.Create(new ClientCredentials
-                {
-                    AuthUrl = "https://<keycloak-url>/auth",
-                    Realm = "<realm>",
-                    ClientId = "<clientid>",
-                    ClientSecret = "<client-secret>"
-                });
-            using var usersApi = ApiClientFactory.Create<UsersApi>(httpClient);
+    KeycloakUrl = "https://<keycloak-url>/auth",
+    Realm = "<realm>",
+    UserName = "<username>",
+    Password = "<password>"
+};
 
-            var users = await usersApi.GetUsersAsync("MyRealm");
-            Console.WriteLine($"Users: {users.Count}");
-        }
-    }
-}
+using var httpClient = AuthenticationHttpClientFactory.Create(credentials);
+using var usersApi = ApiClientFactory.Create<UsersApi>(httpClient);
+
+var users = await usersApi.GetUsersAsync("<realm>");
+Console.WriteLine($"Users: {users.Count}");
+```
+
+With authentication by client-id/client-secret
+
+```csharp
+using FS.Keycloak.RestApiClient.Api;
+using FS.Keycloak.RestApiClient.Authentication.ClientFactory;
+using FS.Keycloak.RestApiClient.Authentication.Flow;
+using FS.Keycloak.RestApiClient.ClientFactory;
+
+var credentials = new ClientCredentialsFlow
+{
+    KeycloakUrl = "https://<keycloak-url>/auth",
+    Realm = "<realm>",
+    ClientId = "<client-id>",
+    ClientSecret = "<client-secret>"
+};
+
+using var httpClient = AuthenticationHttpClientFactory.Create(credentials);
+using var usersApi = ApiClientFactory.Create<UsersApi>(httpClient);
+
+var users = await usersApi.GetUsersAsync("<realm>");
+Console.WriteLine($"Users: {users.Count}");
 ```
 
 ## Advanced Usage
@@ -157,6 +124,5 @@ You'll loose some configuration settings, the features affected are: Setting and
 Here an example of DI setup in a sample web project:
 
 ```csharp
-services.AddHttpClient<YourApiClass>(httpClient =>
-   new PetApi(httpClient));
+services.AddHttpClient<YourApiClass>(httpClient => new PetApi(httpClient));
 ```
