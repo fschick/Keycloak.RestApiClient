@@ -57,7 +57,7 @@ using FS.Keycloak.RestApiClient.ClientFactory;
 
 var credentials = new PasswordGrantFlow
 {
-    KeycloakUrl = "https://<keycloak-url>/auth",
+    KeycloakUrl = "https://<keycloak-url>",
     Realm = "<realm>",
     UserName = "<username>",
     Password = "<password>"
@@ -80,7 +80,7 @@ using FS.Keycloak.RestApiClient.ClientFactory;
 
 var credentials = new ClientCredentialsFlow
 {
-    KeycloakUrl = "https://<keycloak-url>/auth",
+    KeycloakUrl = "https://<keycloak-url>",
     Realm = "<realm>",
     ClientId = "<client-id>",
     ClientSecret = "<client-secret>"
