@@ -14,6 +14,7 @@ This is a .NET / C# REST API client
 
 | Keycloak.RestApiClient | Keycloak |
 | ---------------------- | -------- |
+| 23.n.n                 | 23.x.x   |
 | 22.n.n                 | 22.x.x   |
 | 21.n.n                 | 21.x.x   |
 | 20.n.n                 | 20.x.x   |

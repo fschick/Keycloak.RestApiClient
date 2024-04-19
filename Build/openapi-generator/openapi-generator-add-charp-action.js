@@ -14,7 +14,7 @@ async function replace() {
             operation['x-csharp-action'] = humaziePath(path, operationName);
         }
     }
-
+	
     openApiDefinitionJson = JSON.stringify(openApiDefinition, null, '  ');
     await writeFile(outputFile, openApiDefinitionJson, 'utf8');
 }
@@ -23,7 +23,7 @@ function humaziePath(path, operation) {
     if (!path)
         return path;
 
-    var parts = path
+    var parts = path.replace(/^\/admin\/realms/, '')
         .split('/')
         .filter(part => part && part != '{realm}')
 

@@ -13,13 +13,14 @@ param (
 # Setup
 $workingDirectory = [System.IO.Path]::Combine("$PSScriptRoot", "..", "..")
 $localOpenApiJson = [System.IO.Path]::Combine($workingDirectory, "keycloak.openapi.json")
-$localOpenApiJsonCleaned = [System.IO.Path]::Combine($workingDirectory, "keycloak.openapi.clean.json")
+$localOpenApiJsonFixed = [System.IO.Path]::Combine($workingDirectory, "keycloak.openapi.fixed.json")
+$localOpenApiJsonOperation = [System.IO.Path]::Combine($workingDirectory, "keycloak.openapi.operation.json")
 
 Push-Location $workingDirectory
 
 # Set input file
 if (!$openApiJson){
-    $openApiJson = "https://raw.githubusercontent.com/dahag-ag/keycloak-openapi/main/OpenApiDefinitions/keycloak-19.0.0.json"
+    $openApiJson = "https://raw.githubusercontent.com/dahag-ag/keycloak-openapi/main/OpenApiDefinitions/keycloak-23.0.0.json"
 }
 
 # NPM install
@@ -32,21 +33,17 @@ if ($openApiJson.StartsWith("http")) {
 	Copy-Item $openApiJson $localOpenApiJson
 }
 
-# Clean up downloaded file (replace '<' and '>' in descriptions)
-$content = [System.IO.File]::ReadAllText($localOpenApiJson)
-$content = $content -replace '("?description"?\s*:\s*)(.*)<(.*)>(.*)', '$1$2{$3}$4'
-[System.IO.File]::WriteAllText($localOpenApiJsonCleaned, $content)
-
 # Add humanized C# operation name
-& node Build/openapi-generator/openapi-generator-add-charp-action.js $localOpenApiJsonCleaned $localOpenApiJsonCleaned
+& node Build/openapi-generator/openapi-generator-fix-spec.js $localOpenApiJson $localOpenApiJsonFixed
+& node Build/openapi-generator/openapi-generator-add-charp-action.js $localOpenApiJsonFixed $localOpenApiJsonOperation
 
 # Generate client
 Push-Location Build/openapi-generator
-& node_modules/.bin/openapi-generator-cli generate -c openapi-generator.config.json -g csharp-netcore --template-dir templates --type-mappings date-span='TimeSpan' -i $localOpenApiJsonCleaned -o ../../FS.Keycloak.RestApiClient
+& node_modules/.bin/openapi-generator-cli generate -c openapi-generator.config.json -g csharp --template-dir templates --type-mappings date-span='TimeSpan' --global-property apiTests=false -o ../../FS.Keycloak.RestApiClient -i $localOpenApiJsonOperation
 Pop-Location
 
 # Fix smaller issues from open API generator
-& node Build/openapi-generator/openapi-generator-fix-shortcoming.js FS.Keycloak.RestApiClient
+& node Build/openapi-generator/openapi-generator-fix-project.js FS.Keycloak.RestApiClient
 
 # Copy README.md
 Copy-Item README.md FS.Keycloak.RestApiClient/README.md

@@ -5,6 +5,10 @@ const projectImports = `
   <Import Project="../../../Build/targets/net_standard.props" />
   <Import Project="../../../Build/targets/version.props" />
   <Import Project="../../../Build/targets/nuget.props" />
+  
+  <PropertyGroup>
+    <NoWarn>1701;1702;IDE0079;CS0472;CS0612</NoWarn>
+  </PropertyGroup>
 
   <ItemGroup>
     <None Include="../../../FS.Keycloak.RestApiClient.png" Pack="true" PackagePath="Schick.Keycloak.RestApiClient.png"/>
@@ -21,7 +25,7 @@ const projectFixes = [
 const fixes = [
 	// Sample:
 	// {search: /cc/g, replace: 'ee'},
-	{search: /(DateTimeOffset)\?\?/g, replace: '$1?'},
+	// {search: /(DateTimeOffset)\?\?/g, replace: '$1?'},
 ];
 
 console.log('Replace version information ...');

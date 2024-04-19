@@ -9,20 +9,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
     - name: Setup .NET
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 6.0.x
-    - name: Setup Node 18.x
-      uses: actions/setup-node@v1
+        dotnet-version: 8.0.x
+    - name: Setup Node 20.x
+      uses: actions/setup-node@v4
       with:
         node-version: '18.x'
     - name: Setup Java
-      uses: actions/setup-java@v2
+      uses: actions/setup-java@v4
       with:
         distribution: 'microsoft'
-        java-version: '17'
+        java-version: '21'
     - name: Publish NuGet package
       shell: pwsh
-      run: Build/scripts/rest_api_client.publish.ps1 -version ${{github.ref_name}} -publshFolder Keycloak.RestApiClient.${{github.ref_name}} -nugetUrl https://api.nuget.org/v3/index.json -apiKey ${{ secrets.NUGET_API_KEY }} -openApiJson https://raw.githubusercontent.com/dahag-ag/keycloak-openapi/main/OpenApiDefinitions/keycloak-22.0.1.json
+      run: Build/scripts/rest_api_client.publish.ps1 -version ${{github.ref_name}} -publshFolder Keycloak.RestApiClient.${{github.ref_name}} -nugetUrl https://api.nuget.org/v3/index.json -apiKey ${{ secrets.NUGET_API_KEY }} -openApiJson https://raw.githubusercontent.com/dahag-ag/keycloak-openapi/main/OpenApiDefinitions/keycloak-23.0.0.json
