@@ -1,4 +1,5 @@
 {
+  "caseInsensitiveResponseHeaders": true,
   "library": "httpclient",
   "netCoreProjectFile": true,
   "targetFramework": "netstandard2.0",
