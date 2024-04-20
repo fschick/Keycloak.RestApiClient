@@ -2,6 +2,9 @@ using System;
 
 namespace FS.Keycloak.RestApiClient.Authentication.Flow
 {
+    /// <summary>
+    /// Base class for authentication flows.
+    /// </summary>
     public abstract class AuthenticationFlow
     {
         private string _realm;

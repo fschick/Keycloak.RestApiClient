@@ -12,14 +12,17 @@ using System.Threading.Tasks;
 
 namespace FS.Keycloak.RestApiClient.Authentication.Client
 {
+    /// <inheritdoc />
     public class PasswordGrantHttpClient : AuthenticationHttpClient
     {
         private KeycloakApiToken _token;
         private readonly Dictionary<string, string> _parameters;
 
+        /// <inheritdoc />
         public PasswordGrantHttpClient(AuthenticationFlow flow)
             : base(flow) { }
 
+        /// <inheritdoc />
         public PasswordGrantHttpClient(PasswordGrantFlow flow, HttpMessageHandler handler, bool disposeHandler)
             : base(flow, handler, disposeHandler)
         {
@@ -35,6 +38,7 @@ namespace FS.Keycloak.RestApiClient.Authentication.Client
                 _parameters.Add("scope", flow.Scope);
         }
 
+        /// <inheritdoc />
         public override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             await AddAuthorizationHeader(request, cancellationToken);
@@ -70,9 +74,11 @@ namespace FS.Keycloak.RestApiClient.Authentication.Client
 
 namespace FS.Keycloak.RestApiClient.Client.Auth
 {
+    /// <inheritdoc />
     [Obsolete("Use PasswordGrantHttpClient instead.")]
     public class AuthClientPasswordGrant : PasswordGrantHttpClient
     {
+        /// <inheritdoc />
         public AuthClientPasswordGrant(PasswordGrant flow, HttpMessageHandler handler = null, bool disposeHandler = true)
             : base(flow, handler, disposeHandler) { }
     }

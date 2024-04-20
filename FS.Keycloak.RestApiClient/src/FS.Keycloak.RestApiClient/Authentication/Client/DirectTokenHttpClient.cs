@@ -9,17 +9,21 @@ using System.Threading.Tasks;
 
 namespace FS.Keycloak.RestApiClient.Authentication.Client
 {
+    /// <inheritdoc />
     public class DirectTokenHttpClient : AuthenticationHttpClient
     {
         private readonly string _token;
 
+        /// <inheritdoc />
         public DirectTokenHttpClient(AuthenticationFlow flow)
             : base(flow) { }
 
+        /// <inheritdoc />
         public DirectTokenHttpClient(DirectTokenFlow flow, HttpMessageHandler handler, bool disposeHandler)
             : base(flow, handler, disposeHandler)
             => _token = flow.Token;
 
+        /// <inheritdoc />
         public override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             AddAuthorizationHeader(request);
@@ -33,9 +37,11 @@ namespace FS.Keycloak.RestApiClient.Authentication.Client
 
 namespace FS.Keycloak.RestApiClient.Client.Auth
 {
+    /// <inheritdoc />
     [Obsolete("Use DirectTokenHttpClient instead.")]
     public class AuthClientDirectToken : DirectTokenHttpClient
     {
+        /// <inheritdoc />
         public AuthClientDirectToken(DirectToken flow, HttpMessageHandler handler = null, bool disposeHandler = true)
             : base(flow, handler, disposeHandler) { }
     }

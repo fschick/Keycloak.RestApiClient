@@ -1,5 +1,6 @@
 using FS.Keycloak.RestApiClient.Authentication.Flow;
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace FS.Keycloak.RestApiClient.Authentication.Flow
 {
@@ -26,6 +27,7 @@ namespace FS.Keycloak.RestApiClient.Model
     /// Authenticate against Keycloak using client credentials flow.
     /// </summary>
     [Obsolete("Use ClientCredentialsFlow instead.")]
+    [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
     public class ClientCredentials : ClientCredentialsFlow
     {
     }

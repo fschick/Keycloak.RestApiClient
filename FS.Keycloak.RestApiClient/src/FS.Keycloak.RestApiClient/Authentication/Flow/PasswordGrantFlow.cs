@@ -1,5 +1,6 @@
 using FS.Keycloak.RestApiClient.Authentication.Flow;
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace FS.Keycloak.RestApiClient.Authentication.Flow
 {
@@ -9,12 +10,12 @@ namespace FS.Keycloak.RestApiClient.Authentication.Flow
     public class PasswordGrantFlow : AuthenticationFlow
     {
         /// <summary>
-        /// The username of the user to authenticate.
+        /// Username to authenticate with.
         /// </summary>
         public string UserName { get; set; }
 
         /// <summary>
-        /// The password of the user to authenticate.
+        /// Password for the user to authenticate.
         /// </summary>
         public string Password { get; set; }
     }
@@ -26,6 +27,7 @@ namespace FS.Keycloak.RestApiClient.Model
     /// Authenticate against Keycloak using password grant flow.
     /// </summary>
     [Obsolete("Use PasswordGrantFlow instead.")]
+    [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
     public class PasswordGrant : PasswordGrantFlow
     {
     }

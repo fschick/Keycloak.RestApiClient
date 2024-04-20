@@ -1,5 +1,6 @@
 using FS.Keycloak.RestApiClient.Authentication.Flow;
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace FS.Keycloak.RestApiClient.Authentication.Flow
 {
@@ -21,6 +22,7 @@ namespace FS.Keycloak.RestApiClient.Model
     /// Authenticate against Keycloak using a direct token.
     /// </summary>
     [Obsolete("Use DirectTokenFlow instead.")]
+    [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
     public class DirectToken : DirectTokenFlow
     {
     }
