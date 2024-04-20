@@ -20,7 +20,7 @@ Push-Location $workingDirectory
 
 # Set input file
 if (!$openApiJson){
-    $openApiJson = "https://raw.githubusercontent.com/dahag-ag/keycloak-openapi/main/OpenApiDefinitions/keycloak-23.0.0.json"
+    $openApiJson = "https://www.keycloak.org/docs-api/latest/rest-api/openapi.json"
 }
 
 # NPM install
