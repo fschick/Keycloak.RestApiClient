@@ -19,7 +19,7 @@ namespace FS.Keycloak.RestApiClient.ClientFactory
                 .CreateInstance(
                     typeof(TApiClient),
                     httpClient,
-                    new Configuration { BasePath = $"{httpClient.KeycloakUrl}/admin/realms" },
+                    new Configuration { BasePath = $"{httpClient.KeycloakUrl}" },
                     null
                 );
     }
