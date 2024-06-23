@@ -23,4 +23,4 @@ jobs:
         java-version: '21'
     - name: Build NuGet package
       shell: pwsh
-      run: Build/scripts/rest_api_client.build.ps1 -version 0.0.0 -publshFolder Keycloak.RestApiClient.${{github.ref_name}} -openApiJson https://www.keycloak.org/docs-api/latest/rest-api/openapi.json
+      run: Build/scripts/rest_api_client.build.ps1 -version 0.0.0 -publshFolder Keycloak.RestApiClient.${{github.ref_name}} -openApiJson https://www.keycloak.org/docs-api/25.0.1/rest-api/openapi.json
