@@ -2,7 +2,7 @@ name: Publish NuGet Packages
 
 on:
   release:
-    types: [published]
+    types: [ published ]
 
 jobs:
   publish_nuget:
@@ -25,4 +25,4 @@ jobs:
         java-version: '21'
     - name: Publish NuGet package
       shell: pwsh
-      run: Build/scripts/rest_api_client.publish.ps1 -version ${{github.ref_name}} -publshFolder Keycloak.RestApiClient.${{github.ref_name}} -nugetUrl https://api.nuget.org/v3/index.json -apiKey ${{ secrets.NUGET_API_KEY }} -openApiJson https://www.keycloak.org/docs-api/26.0.1/rest-api/openapi.json
+      run: Build/scripts/rest_api_client.publish.ps1 -version ${{github.ref_name}} -publshFolder Keycloak.RestApiClient.${{github.ref_name}} -nugetUrl https://api.nuget.org/v3/index.json -apiKey ${{ secrets.NUGET_API_KEY }} -openApiJson https://www.keycloak.org/docs-api/26.0.2/rest-api/openapi.json
