@@ -297,7 +297,7 @@ __pycache__/
 # User added stuff
 .openapi-generator/
 /keycloak.openapi.json
-/keycloak.openapi.clean.json
+/keycloak.openapi.*.json
 /FS.Keycloak.RestApiClient/.gitignore
 /FS.Keycloak.RestApiClient/.openapi-generator-ignore
 /FS.Keycloak.RestApiClient/FS.Keycloak.RestApiClient.sln
@@ -314,5 +314,3 @@ __pycache__/
 /FS.Keycloak.RestApiClient/src/FS.Keycloak.RestApiClient.Test/FS.Keycloak.RestApiClient.Test.csproj
 /FS.Keycloak.RestApiClient/src/FS.Keycloak.RestApiClient.Test/Authentication/AuthenticationTests.data.json
 /FS.Keycloak.RestApiClient/api/openapi.yaml
-/keycloak.openapi.fixed.json
-/keycloak.openapi.operation.json

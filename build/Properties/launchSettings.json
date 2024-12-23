@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "Build": {
+      "commandName": "Project",
+      "commandLineArgs": "BuildClient"
+    },
+    "Publish": {
+      "commandName": "Project",
+      "commandLineArgs": "PublishClient"
+    }
+  }
+}

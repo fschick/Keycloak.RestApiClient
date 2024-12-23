@@ -23,6 +23,14 @@ jobs:
       with:
         distribution: 'microsoft'
         java-version: '21'
-    - name: Publish NuGet package
-      shell: pwsh
-      run: Build/scripts/rest_api_client.publish.ps1 -version ${{github.ref_name}} -publshFolder Keycloak.RestApiClient.${{github.ref_name}} -nugetUrl https://api.nuget.org/v3/index.json -apiKey ${{ secrets.NUGET_API_KEY }} -openApiJson https://www.keycloak.org/docs-api/26.0.6/rest-api/openapi.json
+    - name: Build NuGet package
+      env:
+        OpenApiJson: https://www.keycloak.org/docs-api/26.0.6/rest-api/openapi.json
+        PublishFolder: Keycloak.RestApiClient.${{github.ref_name}}
+        NuGetApiKey: ${{ secrets.NUGET_API_KEY }}
+      run: ./build.cmd PublishClient
+    - name: Upload NuGet package
+      uses: actions/upload-artifact@v4
+      with:
+        name: Keycloak.RestApiClient.${{github.ref_name}}
+        path: Keycloak.RestApiClient.${{github.ref_name}}

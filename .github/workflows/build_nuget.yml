@@ -22,5 +22,8 @@ jobs:
         distribution: 'microsoft'
         java-version: '21'
     - name: Build NuGet package
-      shell: pwsh
-      run: Build/scripts/rest_api_client.build.ps1 -version 0.0.0 -publshFolder Keycloak.RestApiClient.${{github.ref_name}} -openApiJson https://www.keycloak.org/docs-api/26.0.6/rest-api/openapi.json
+      env:
+        OpenApiJson: https://www.keycloak.org/docs-api/26.0.6/rest-api/openapi.json
+        PublishFolder: Keycloak.RestApiClient.${{github.ref_name}}
+        NuGetApiKey: ${{ secrets.NUGET_API_KEY }}
+      run: ./build.cmd BuildClient
