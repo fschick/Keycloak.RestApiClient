@@ -66,6 +66,15 @@ public static class OpenApiSpec
         document.Components.Schemas.Get("RealmRepresentation")?.Properties.Remove("oAuth2DeviceCodeLifespan");
         document.Components.Schemas.Get("RealmRepresentation")?.Properties.Remove("oAuth2DevicePollingInterval");
 
+        // Fix wrong content type, https://github.com/fschick/Keycloak.RestApiClient/issues/11
+        var adminRealmsOrganizationMembersRequestBody = document.Paths.Get("/admin/realms/{realm}/organizations/{id}/members")?.Operations.Get(OperationType.Post)?.RequestBody;
+        if (adminRealmsOrganizationMembersRequestBody != null)
+        {
+            var jsonSchema = adminRealmsOrganizationMembersRequestBody.Content.First(medaType => medaType.Key == "application/json");
+            adminRealmsOrganizationMembersRequestBody.Content.Remove(jsonSchema.Key);
+            adminRealmsOrganizationMembersRequestBody.Content.Add("text/plain", jsonSchema.Value);
+        }
+
         // Fix duplicate parameter names, https://github.com/fschick/Keycloak.RestApiClient/issues/15
         var adminRealmOrganizationMember = document.Paths.Get("/admin/realms/{realm}/organizations/{id}/members/{id}");
         if (adminRealmOrganizationMember != null)
