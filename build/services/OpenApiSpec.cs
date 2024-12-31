@@ -66,6 +66,44 @@ public static class OpenApiSpec
         document.Components.Schemas.Get("RealmRepresentation")?.Properties.Remove("oAuth2DeviceCodeLifespan");
         document.Components.Schemas.Get("RealmRepresentation")?.Properties.Remove("oAuth2DevicePollingInterval");
 
+        // Fix duplicate parameter names, https://github.com/fschick/Keycloak.RestApiClient/issues/15
+        var adminRealmOrganizationMember = document.Paths.Get("/admin/realms/{realm}/organizations/{id}/members/{id}");
+        if (adminRealmOrganizationMember != null)
+        {
+            foreach (var operation in adminRealmOrganizationMember.Operations.Values)
+            {
+                var originIdParam = operation.Parameters.First(parameter => parameter.Name == "id");
+                var organizationIdParam = new OpenApiParameter(originIdParam) { Name = "organizationId" };
+                var userIdParam = new OpenApiParameter(originIdParam) { Name = "userId" };
+
+                operation.Parameters.Remove(originIdParam);
+                operation.Parameters.Add(organizationIdParam);
+                operation.Parameters.Add(userIdParam);
+            }
+
+            document.Paths.Remove("/admin/realms/{realm}/organizations/{id}/members/{id}");
+            document.Paths.Add("/admin/realms/{realm}/organizations/{organizationId}/members/{userId}", adminRealmOrganizationMember);
+        }
+
+        // Fix duplicate parameter names, https://github.com/fschick/Keycloak.RestApiClient/issues/15
+        var adminRealmOrganizationMemberOrganizations = document.Paths.Get("/admin/realms/{realm}/organizations/{id}/members/{id}/organizations");
+        if (adminRealmOrganizationMemberOrganizations != null)
+        {
+            foreach (var operation in adminRealmOrganizationMemberOrganizations.Operations.Values)
+            {
+                var originIdParam = operation.Parameters.First(parameter => parameter.Name == "id");
+                var organizationIdParam = new OpenApiParameter(originIdParam) { Name = "organizationId" };
+                var userIdParam = new OpenApiParameter(originIdParam) { Name = "userId" };
+
+                operation.Parameters.Remove(originIdParam);
+                operation.Parameters.Add(organizationIdParam);
+                operation.Parameters.Add(userIdParam);
+            }
+
+            document.Paths.Remove("/admin/realms/{realm}/organizations/{id}/members/{id}/organizations");
+            document.Paths.Add("/admin/realms/{realm}/organizations/{organizationId}/members/{userId}/organizations", adminRealmOrganizationMemberOrganizations);
+        }
+
         WriteOpenApiJson(document, destination);
     }
 
