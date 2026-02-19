@@ -13,7 +13,7 @@ namespace FS.Keycloak.RestApiClient.Client
         /// <summary>
         ///  Creates a HttpClient authenticated against a Keycloak server.
         /// </summary>
-        /// <param name="authServerUrl">Base URL to keycloak server, e.g. https://keycloak.example.com:8443/</param>
+        /// <param name="authServerUrl">Base URL to keycloak server, e.g. https://keycloak.example.com:8443</param>
         /// <param name="user">Username to authenticate with.</param>
         /// <param name="password">Password for the user to authenticate.</param>
         [Obsolete("Use AuthenticationHttpClientFactory with explicit authentication flow parameter.")]
@@ -23,7 +23,7 @@ namespace FS.Keycloak.RestApiClient.Client
         /// <summary>
         ///  Creates a HttpClient authenticated against a Keycloak server.
         /// </summary>
-        /// <param name="authServerUrl">Base URL to keycloak server, e.g. https://keycloak.example.com:8443/</param>
+        /// <param name="authServerUrl">Base URL to keycloak server, e.g. https://keycloak.example.com:8443</param>
         /// <param name="realm">The realm to authenticate against.</param>
         /// <param name="user">Username to authenticate with.</param>
         /// <param name="password">Password for the user to authenticate.</param>
@@ -34,7 +34,7 @@ namespace FS.Keycloak.RestApiClient.Client
         /// <summary>
         ///  Creates a HttpClient authenticated against a Keycloak server.
         /// </summary>
-        /// <param name="authServerUrl">Base URL to keycloak server, e.g. https://keycloak.example.com:8443/</param>
+        /// <param name="authServerUrl">Base URL to keycloak server, e.g. https://keycloak.example.com:8443</param>
         /// <param name="user">Username to authenticate with.</param>
         /// <param name="password">Password for the user to authenticate.</param>
         /// <param name="handler">The <see cref="HttpMessageHandler" /> responsible for processing the HTTP response messages.</param>
@@ -45,7 +45,7 @@ namespace FS.Keycloak.RestApiClient.Client
         /// <summary>
         ///  Creates a HttpClient authenticated against a Keycloak server.
         /// </summary>
-        /// <param name="authServerUrl">Base URL to keycloak server, e.g. https://keycloak.example.com:8443/</param>
+        /// <param name="authServerUrl">Base URL to keycloak server, e.g. https://keycloak.example.com:8443</param>
         /// <param name="realm">The realm to authenticate against.</param>
         /// <param name="user">Username to authenticate with.</param>
         /// <param name="password">Password for the user to authenticate.</param>
@@ -57,7 +57,7 @@ namespace FS.Keycloak.RestApiClient.Client
         /// <summary>
         ///  Creates a HttpClient authenticated against a Keycloak server.
         /// </summary>
-        /// <param name="authServerUrl">Base URL to keycloak server, e.g. https://keycloak.example.com:8443/</param>
+        /// <param name="authServerUrl">Base URL to keycloak server, e.g. https://keycloak.example.com:8443</param>
         /// <param name="user">Username to authenticate with.</param>
         /// <param name="password">Password for the user to authenticate.</param>
         /// <param name="handler">The <see cref="HttpMessageHandler" /> responsible for processing the HTTP response messages.</param>
@@ -69,7 +69,7 @@ namespace FS.Keycloak.RestApiClient.Client
         /// <summary>
         ///  Creates a HttpClient authenticated against a Keycloak server.
         /// </summary>
-        /// <param name="authServerUrl">Base URL to keycloak server, e.g. https://keycloak.example.com:8443/</param>
+        /// <param name="authServerUrl">Base URL to keycloak server, e.g. https://keycloak.example.com:8443</param>
         /// <param name="realm">The realm to authenticate against.</param>
         /// <param name="user">Username to authenticate with.</param>
         /// <param name="password">Password for the user to authenticate.</param>

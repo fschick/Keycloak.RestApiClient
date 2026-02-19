@@ -11,7 +11,7 @@ namespace FS.Keycloak.RestApiClient.Authentication.Flow
         private string _scope;
 
         /// <summary>
-        /// Base URL to keycloak server, e.g. https://keycloak.example.com:8443/.
+        /// Base URL to keycloak server, e.g. https://keycloak.example.com:8443.
         /// </summary>
         public string KeycloakUrl { get; set; }
 
@@ -21,7 +21,7 @@ namespace FS.Keycloak.RestApiClient.Authentication.Flow
         public string Realm { get => _realm ?? "master"; set => _realm = value; }
 
         /// <summary>
-        /// Base URL to keycloak server, e.g. https://keycloak.example.com:8443/.
+        /// Base URL to keycloak server, e.g. https://keycloak.example.com:8443.
         /// </summary>
         [Obsolete("Use KeycloakUrl instead.")]
         public string AuthUrl

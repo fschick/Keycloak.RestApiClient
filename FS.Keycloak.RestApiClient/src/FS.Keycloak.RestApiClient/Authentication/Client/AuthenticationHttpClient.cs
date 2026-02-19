@@ -19,7 +19,7 @@ namespace FS.Keycloak.RestApiClient.Authentication.Client
         protected static readonly JsonSerializerSettings KeycloakJsonSerializerSettings = new JsonSerializerSettings { ContractResolver = new SnakeCaseContractResolver() };
 
         /// <summary>
-        /// Base URL to keycloak server, e.g. https://keycloak.example.com:8443/
+        /// Base URL to keycloak server, e.g. https://keycloak.example.com:8443
         /// </summary>
         public string KeycloakUrl { get; }
 
@@ -47,7 +47,7 @@ namespace FS.Keycloak.RestApiClient.Authentication.Client
             if (flow == null)
                 throw new ArgumentNullException(nameof(flow));
 
-            KeycloakUrl = flow.KeycloakUrl;
+            KeycloakUrl = flow.KeycloakUrl.Trim('/');
             AuthTokenUrl = $"{KeycloakUrl}/realms/{flow.Realm}/protocol/openid-connect/token";
         }
     }

@@ -18,7 +18,6 @@ namespace FS.Keycloak.RestApiClient.Authentication.Client
         private KeycloakApiToken _token;
         private readonly Dictionary<string, string> _parameters;
 
-
         /// <inheritdoc />
         public ClientCredentialsGrantHttpClient(AuthenticationFlow flow)
             : base(flow) { }
