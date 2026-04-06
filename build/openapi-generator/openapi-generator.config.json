@@ -1,11 +1,11 @@
 {
   "caseInsensitiveResponseHeaders": true,
+  "conditionalSerialization": true,
   "library": "httpclient",
   "netCoreProjectFile": true,
-  "targetFramework": "netstandard2.0",
-  "packageName": "FS.Keycloak.RestApiClient",
-  "useDateTimeOffset": false,
-  "conditionalSerialization": true,
   "nullableReferenceTypes": false,
-  "optionalEmitDefaultValues": true
+  "optionalEmitDefaultValues": true,
+  "packageName": "FS.Keycloak.RestApiClient",
+  "targetFramework": "netstandard2.0",
+  "useDateTimeOffset": false
 }
