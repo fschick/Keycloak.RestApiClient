@@ -10,7 +10,9 @@
     [DataContract(Name = "{{{name}}}")]
     {{^useUnityWebRequest}}
     {{#discriminator}}
+    {{#mappedModels.size}}
     [JsonConverter(typeof(JsonSubtypes), "{{{discriminatorName}}}")]
+    {{/mappedModels.size}}
     {{#mappedModels}}
     [JsonSubtypes.KnownSubType(typeof({{{modelName}}}), "{{^vendorExtensions.x-discriminator-value}}{{{mappingName}}}{{/vendorExtensions.x-discriminator-value}}{{#vendorExtensions.x-discriminator-value}}{{{.}}}{{/vendorExtensions.x-discriminator-value}}")]
     {{/mappedModels}}
@@ -23,12 +25,14 @@
         {{#items}}
         {{^complexType}}
 {{>modelInnerEnum}}
+
         {{/complexType}}
         {{/items}}
         {{/items.isEnum}}
         {{#isEnum}}
         {{^complexType}}
 {{>modelInnerEnum}}
+
         {{/complexType}}
         {{/isEnum}}
         {{#isEnum}}
@@ -40,7 +44,9 @@
         /// <value>{{.}}</value>
         {{/description}}
         {{#example}}
-        /// <example>{{.}}</example>
+        /*
+        <example>{{.}}</example>
+        */
         {{/example}}
         {{^conditionalSerialization}}
         [DataMember(Name = "{{baseName}}"{{#required}}, IsRequired = true{{/required}}, EmitDefaultValue = {{#vendorExtensions.x-emit-default-value}}true{{/vendorExtensions.x-emit-default-value}}{{^vendorExtensions.x-emit-default-value}}{{#required}}true{{/required}}{{^required}}{{#isBoolean}}true{{/isBoolean}}{{^isBoolean}}{{#isNullable}}true{{/isNullable}}{{^isNullable}}false{{/isNullable}}{{/isBoolean}}{{/required}}{{/vendorExtensions.x-emit-default-value}})]
@@ -134,7 +140,7 @@
     {{#hasOnlyReadOnly}}
         [JsonConstructorAttribute]
     {{/hasOnlyReadOnly}}
-        public {{classname}}({{#vars}}{{^isReadOnly}}{{{datatypeWithEnum}}}{{#isEnum}}{{^isContainer}}{{^required}}{{^conditionalSerialization}}?{{/conditionalSerialization}}{{/required}}{{/isContainer}}{{/isEnum}}{{#conditionalSerialization}}{{#vendorExtensions.x-is-value-type}}?{{/vendorExtensions.x-is-value-type}}{{/conditionalSerialization}} {{#lambda.camelcase_sanitize_param}}{{name}}{{/lambda.camelcase_sanitize_param}} = {{#defaultValue}}{{^isDateTime}}{{#isString}}{{^isEnum}}@{{/isEnum}}{{/isString}}{{{defaultValue}}}{{/isDateTime}}{{#isDateTime}}default({{{datatypeWithEnum}}}){{/isDateTime}}{{/defaultValue}}{{^defaultValue}}default({{{datatypeWithEnum}}}{{#isEnum}}{{^isContainer}}{{^required}}{{^conditionalSerialization}}?{{/conditionalSerialization}}{{/required}}{{/isContainer}}{{/isEnum}}{{#conditionalSerialization}}{{#vendorExtensions.x-is-value-type}}?{{/vendorExtensions.x-is-value-type}}{{/conditionalSerialization}}){{/defaultValue}}{{^-last}}, {{/-last}}{{/isReadOnly}}{{/vars}}){{#parent}} : base({{#parentVars}}{{#lambda.camelcase_sanitize_param}}{{name}}{{/lambda.camelcase_sanitize_param}}{{^-last}}, {{/-last}}{{/parentVars}}){{/parent}}
+        public {{classname}}({{#readWriteVars}}{{{datatypeWithEnum}}}{{#isEnum}}{{^isContainer}}{{^required}}?{{/required}}{{/isContainer}}{{/isEnum}} {{#lambda.camelcase_sanitize_param}}{{name}}{{/lambda.camelcase_sanitize_param}} = {{#defaultValue}}{{^isDateTime}}{{#isString}}{{^isEnum}}@{{/isEnum}}{{/isString}}{{{defaultValue}}}{{/isDateTime}}{{#isDateTime}}default{{/isDateTime}}{{/defaultValue}}{{^defaultValue}}default{{/defaultValue}}{{^-last}}, {{/-last}}{{/readWriteVars}}){{#parent}} : base({{#parentVars}}{{#lambda.camelcase_sanitize_param}}{{name}}{{/lambda.camelcase_sanitize_param}}{{^-last}}, {{/-last}}{{/parentVars}}){{/parent}}
         {
             {{#vars}}
             {{^isInherited}}
@@ -214,17 +220,21 @@
         /// </summary>{{#description}}
         /// <value>{{.}}</value>{{/description}}
         {{#example}}
-        /// <example>{{.}}</example>
+        /*
+        <example>{{.}}</example>
+        */
         {{/example}}
         {{^conditionalSerialization}}
         [DataMember(Name = "{{baseName}}"{{#required}}, IsRequired = true{{/required}}, EmitDefaultValue = {{#vendorExtensions.x-emit-default-value}}true{{/vendorExtensions.x-emit-default-value}}{{^vendorExtensions.x-emit-default-value}}{{#required}}true{{/required}}{{^required}}{{#isBoolean}}true{{/isBoolean}}{{^isBoolean}}{{#isNullable}}true{{/isNullable}}{{^isNullable}}false{{/isNullable}}{{/isBoolean}}{{/required}}{{/vendorExtensions.x-emit-default-value}})]
         {{#isDate}}
+        {{^supportsDateOnly}}
         [JsonConverter(typeof(OpenAPIDateConverter))]
+        {{/supportsDateOnly}}
         {{/isDate}}
         {{#deprecated}}
         [Obsolete]
         {{/deprecated}}
-        public {{{dataType}}}{{#vendorExtensions.x-is-value-type}}?{{/vendorExtensions.x-is-value-type}} {{name}} { get; {{#isReadOnly}}private {{/isReadOnly}}set; }
+        public {{{dataType}}} {{name}} { get; {{#isReadOnly}}private {{/isReadOnly}}set; }
 
         {{#isReadOnly}}
         /// <summary>
@@ -246,7 +256,7 @@
         {{#deprecated}}
         [Obsolete]
         {{/deprecated}}
-        public {{{dataType}}}{{#vendorExtensions.x-is-value-type}}?{{/vendorExtensions.x-is-value-type}} {{name}} { get; private set; }
+        public {{{dataType}}} {{name}} { get; private set; }
 
         /// <summary>
         /// Returns false as {{name}} should not be serialized given that it's read-only.
@@ -265,7 +275,7 @@
         {{#deprecated}}
         [Obsolete]
         {{/deprecated}}
-        public {{{dataType}}}{{#vendorExtensions.x-is-value-type}}?{{/vendorExtensions.x-is-value-type}} {{name}}
+        public {{{dataType}}} {{name}}
         {
             get{ return _{{name}};}
             set
@@ -274,7 +284,7 @@
                 _flag{{name}} = true;
             }
         }
-        private {{{dataType}}}{{#vendorExtensions.x-is-value-type}}?{{/vendorExtensions.x-is-value-type}} _{{name}};
+        private {{{dataType}}} _{{name}};
         private bool _flag{{name}};
 
         /// <summary>
@@ -420,5 +430,6 @@
 
 {{#validatable}}
 {{>validatable}}
+
 {{/validatable}}
     }
