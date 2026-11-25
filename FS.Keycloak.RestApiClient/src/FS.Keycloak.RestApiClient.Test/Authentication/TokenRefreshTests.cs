@@ -1,0 +1,133 @@
+using FS.Keycloak.RestApiClient.Authentication.Client;
+using FS.Keycloak.RestApiClient.Authentication.Flow;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
+using Xunit;
+
+namespace FS.Keycloak.RestApiClient.Test.Authentication
+{
+    /// <summary>
+    /// The authenticating clients cache their token, which only pays off while one client
+    /// serves more than a single request. These tests pin down that a client shared by
+    /// concurrent requests asks for exactly one token instead of one per request.
+    /// </summary>
+    public class TokenRefreshTests
+    {
+        private const int ConcurrentRequests = 50;
+
+        [Fact]
+        public async Task WhenClientCredentialsClientIsUsedConcurrently_OnlyOneTokenIsRequested()
+        {
+            using var handler = new TokenCountingHandler();
+            var flow = new ClientCredentialsFlow
+            {
+                KeycloakUrl = "https://keycloak.example.com",
+                Realm = "test",
+                ClientId = "client",
+                ClientSecret = "secret",
+            };
+
+            using var client = new ClientCredentialsGrantHttpClient(flow, handler, disposeHandler: false);
+            await SendConcurrently(client, flow.KeycloakUrl);
+
+            Assert.Equal(1, handler.TokenRequestCount);
+        }
+
+        [Fact]
+        public async Task WhenPasswordGrantClientIsUsedConcurrently_OnlyOneTokenIsRequested()
+        {
+            using var handler = new TokenCountingHandler();
+            var flow = new PasswordGrantFlow
+            {
+                KeycloakUrl = "https://keycloak.example.com",
+                Realm = "test",
+                UserName = "user",
+                Password = "password",
+            };
+
+            using var client = new PasswordGrantHttpClient(flow, handler, disposeHandler: false);
+            await SendConcurrently(client, flow.KeycloakUrl);
+
+            Assert.Equal(1, handler.TokenRequestCount);
+        }
+
+        [Fact]
+        public async Task WhenTokenIsStillValid_NoFurtherTokenIsRequested()
+        {
+            using var handler = new TokenCountingHandler();
+            var flow = new ClientCredentialsFlow
+            {
+                KeycloakUrl = "https://keycloak.example.com",
+                Realm = "test",
+                ClientId = "client",
+                ClientSecret = "secret",
+            };
+
+            using var client = new ClientCredentialsGrantHttpClient(flow, handler, disposeHandler: false);
+            await SendConcurrently(client, flow.KeycloakUrl);
+            await SendConcurrently(client, flow.KeycloakUrl);
+
+            Assert.Equal(1, handler.TokenRequestCount);
+        }
+
+        private static async Task SendConcurrently(HttpClient client, string keycloakUrl)
+        {
+            var requests = Enumerable
+                .Range(0, ConcurrentRequests)
+                .Select(_ => Task.Run(async () =>
+                {
+                    using var request = new HttpRequestMessage(HttpMethod.Get, $"{keycloakUrl}/resource");
+                    using var response = await client.SendAsync(request, CancellationToken.None);
+                    Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+                }))
+                .ToList();
+
+            await Task.WhenAll(requests);
+        }
+
+        /// <summary>
+        /// Answers token requests with a canned token and counts them. The delay widens the
+        /// window in which concurrent callers can all find the token missing or expired.
+        /// </summary>
+        private sealed class TokenCountingHandler : HttpMessageHandler
+        {
+            private readonly int _expiresInSeconds;
+            private int _tokenRequestCount;
+
+            public TokenCountingHandler(int expiresInSeconds = 300)
+                => _expiresInSeconds = expiresInSeconds;
+
+            public int TokenRequestCount => Volatile.Read(ref _tokenRequestCount);
+
+            protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+            {
+                var isTokenRequest = request.RequestUri.AbsolutePath.EndsWith("/protocol/openid-connect/token", StringComparison.Ordinal);
+                if (!isTokenRequest)
+                    return new HttpResponseMessage(HttpStatusCode.OK);
+
+                Interlocked.Increment(ref _tokenRequestCount);
+                await Task.Delay(50, cancellationToken);
+
+                var token = new Dictionary<string, object>
+                {
+                    { "access_token", "access-token" },
+                    { "expires_in", _expiresInSeconds },
+                    { "refresh_expires_in", 0 },
+                    { "refresh_token", "refresh-token" },
+                    { "token_type", "Bearer" },
+                    { "not-before-policy", 0 },
+                    { "session_state", "session" },
+                    { "scope", "openid" },
+                };
+
+                var json = Newtonsoft.Json.JsonConvert.SerializeObject(token);
+                return new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(json) };
+            }
+        }
+    }
+}
