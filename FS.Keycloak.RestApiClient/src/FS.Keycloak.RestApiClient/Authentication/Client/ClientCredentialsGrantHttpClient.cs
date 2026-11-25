@@ -16,6 +16,7 @@ namespace FS.Keycloak.RestApiClient.Authentication.Client
     public class ClientCredentialsGrantHttpClient : AuthenticationHttpClient
     {
         private KeycloakApiToken _token;
+        private readonly SemaphoreSlim _tokenLock = new SemaphoreSlim(1, 1);
         private readonly Dictionary<string, string> _parameters;
 
         /// <inheritdoc />
@@ -46,10 +47,36 @@ namespace FS.Keycloak.RestApiClient.Authentication.Client
 
         private async Task AddAuthorizationHeader(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            if (_token == null || _token.IsExpired)
-                _token = await GetToken(cancellationToken);
+            var token = _token;
+            if (token == null || token.IsExpired)
+                token = await GetValidToken(cancellationToken);
 
-            request.Headers.Authorization = new AuthenticationHeaderValue("bearer", _token.AccessToken);
+            request.Headers.Authorization = new AuthenticationHeaderValue("bearer", token.AccessToken);
+        }
+
+        /// <summary>
+        /// Returns the cached token and renews it when needed, letting only one caller at a
+        /// time perform the renewal. Without the lock every request that finds the token
+        /// expired fetches one of its own, so a client shared by concurrent requests - which
+        /// is what makes the cache worthwhile in the first place - produces one token request
+        /// per in-flight request at every expiry instead of a single one.
+        /// </summary>
+        private async Task<KeycloakApiToken> GetValidToken(CancellationToken cancellationToken)
+        {
+            await _tokenLock.WaitAsync(cancellationToken);
+
+            try
+            {
+                // Re-check inside the lock: another caller may have renewed it while we waited.
+                if (_token == null || _token.IsExpired)
+                    _token = await GetToken(cancellationToken);
+
+                return _token;
+            }
+            finally
+            {
+                _tokenLock.Release();
+            }
         }
 
         private async Task<KeycloakApiToken> GetToken(CancellationToken cancellationToken)
@@ -67,6 +94,15 @@ namespace FS.Keycloak.RestApiClient.Authentication.Client
                     return token;
                 }
             }
+        }
+
+        /// <inheritdoc />
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+                _tokenLock.Dispose();
+
+            base.Dispose(disposing);
         }
     }
 }
