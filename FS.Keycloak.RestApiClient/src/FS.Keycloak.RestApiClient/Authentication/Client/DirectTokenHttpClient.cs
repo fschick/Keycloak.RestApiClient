@@ -3,7 +3,6 @@ using FS.Keycloak.RestApiClient.Authentication.Flow;
 using FS.Keycloak.RestApiClient.Model;
 using System;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -12,7 +11,7 @@ namespace FS.Keycloak.RestApiClient.Authentication.Client
     /// <inheritdoc />
     public class DirectTokenHttpClient : AuthenticationHttpClient
     {
-        private readonly string _token;
+        private readonly KeycloakApiToken _token;
 
         /// <inheritdoc />
         public DirectTokenHttpClient(AuthenticationFlow flow)
@@ -21,17 +20,11 @@ namespace FS.Keycloak.RestApiClient.Authentication.Client
         /// <inheritdoc />
         public DirectTokenHttpClient(DirectTokenFlow flow, HttpMessageHandler handler, bool disposeHandler)
             : base(flow, handler, disposeHandler)
-            => _token = flow.Token;
+            => _token = new KeycloakApiToken(flow.Token, int.MaxValue, 0, null, "Bearer", 0, null, null);
 
         /// <inheritdoc />
-        public override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
-        {
-            AddAuthorizationHeader(request);
-            return await base.SendAsync(request, cancellationToken);
-        }
-
-        private void AddAuthorizationHeader(HttpRequestMessage request)
-            => request.Headers.Authorization = new AuthenticationHeaderValue("bearer", _token);
+        protected override Task<KeycloakApiToken> GetToken(CancellationToken cancellationToken)
+            => Task.FromResult(_token);
     }
 }
 
