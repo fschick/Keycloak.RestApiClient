@@ -25,5 +25,4 @@ jobs:
       env:
         OpenApiJson: https://www.keycloak.org/docs-api/26.8.2/rest-api/openapi.json
         PublishFolder: Keycloak.RestApiClient.${{github.ref_name}}
-        NuGetApiKey: ${{ secrets.NUGET_API_KEY }}
       run: ./build.cmd BuildClient
