@@ -20,6 +20,10 @@ namespace FS.Keycloak.RestApiClient.Test.Authentication
     {
         private const int ConcurrentRequests = 50;
 
+        // Callers arriving after a failure retry by design, so the failing request must stay
+        // in flight until all concurrent callers are queued behind it.
+        private static readonly TimeSpan FailingTokenDelay = TimeSpan.FromMilliseconds(500);
+
         [Fact]
         public async Task WhenClientCredentialsClientIsUsedConcurrently_OnlyOneTokenIsRequested()
         {
@@ -75,6 +79,84 @@ namespace FS.Keycloak.RestApiClient.Test.Authentication
             Assert.Equal(1, handler.TokenRequestCount);
         }
 
+        [Fact]
+        public async Task WhenTokenRequestFails_WaitingCallersFailWithoutRetrying()
+        {
+            using var handler = new TokenCountingHandler(tokenStatusCode: HttpStatusCode.InternalServerError, tokenDelay: FailingTokenDelay);
+            var flow = CreateClientCredentialsFlow();
+
+            using var client = new ClientCredentialsGrantHttpClient(flow, handler, disposeHandler: false);
+            var failures = await SendConcurrentlyExpectingFailure(client, flow.KeycloakUrl);
+
+            Assert.Equal(ConcurrentRequests, failures);
+            Assert.Equal(1, handler.TokenRequestCount);
+        }
+
+        [Fact]
+        public async Task WhenTokenRequestHangs_WaitingCallersFailAfterOneTimeout()
+        {
+            using var handler = new TokenCountingHandler(tokenDelay: Timeout.InfiniteTimeSpan);
+            var flow = CreateClientCredentialsFlow();
+
+            using var client = new ClientCredentialsGrantHttpClient(flow, handler, disposeHandler: false);
+            client.Timeout = FailingTokenDelay;
+
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+            var failures = await SendConcurrentlyExpectingFailure(client, flow.KeycloakUrl);
+            stopwatch.Stop();
+
+            Assert.Equal(ConcurrentRequests, failures);
+            Assert.Equal(1, handler.TokenRequestCount);
+            Assert.True(stopwatch.Elapsed < TimeSpan.FromSeconds(5), $"Callers took {stopwatch.Elapsed} to fail.");
+        }
+
+        [Fact]
+        public async Task WhenTokenRequestFailed_NextCallRetries()
+        {
+            using var handler = new TokenCountingHandler(tokenStatusCode: HttpStatusCode.InternalServerError, tokenDelay: FailingTokenDelay);
+            var flow = CreateClientCredentialsFlow();
+
+            using var client = new ClientCredentialsGrantHttpClient(flow, handler, disposeHandler: false);
+            await SendConcurrentlyExpectingFailure(client, flow.KeycloakUrl);
+
+            handler.TokenStatusCode = HttpStatusCode.OK;
+            await SendConcurrently(client, flow.KeycloakUrl);
+
+            Assert.Equal(2, handler.TokenRequestCount);
+        }
+
+        private static ClientCredentialsFlow CreateClientCredentialsFlow()
+            => new ClientCredentialsFlow
+            {
+                KeycloakUrl = "https://keycloak.example.com",
+                Realm = "test",
+                ClientId = "client",
+                ClientSecret = "secret",
+            };
+
+        private static async Task<int> SendConcurrentlyExpectingFailure(HttpClient client, string keycloakUrl)
+        {
+            var requests = Enumerable
+                .Range(0, ConcurrentRequests)
+                .Select(_ => Task.Run(async () =>
+                {
+                    try
+                    {
+                        using var request = new HttpRequestMessage(HttpMethod.Get, $"{keycloakUrl}/resource");
+                        using var response = await client.SendAsync(request, CancellationToken.None);
+                        return false;
+                    }
+                    catch (Exception)
+                    {
+                        return true;
+                    }
+                }))
+                .ToList();
+
+            var results = await Task.WhenAll(requests);
+            return results.Count(failed => failed);
+        }
+
         private static async Task SendConcurrently(HttpClient client, string keycloakUrl)
         {
             var requests = Enumerable
@@ -97,10 +179,17 @@ namespace FS.Keycloak.RestApiClient.Test.Authentication
         private sealed class TokenCountingHandler : HttpMessageHandler
         {
             private readonly int _expiresInSeconds;
+            private readonly TimeSpan _tokenDelay;
             private int _tokenRequestCount;
 
-            public TokenCountingHandler(int expiresInSeconds = 300)
-                => _expiresInSeconds = expiresInSeconds;
+            public TokenCountingHandler(int expiresInSeconds = 300, HttpStatusCode tokenStatusCode = HttpStatusCode.OK, TimeSpan? tokenDelay = null)
+            {
+                _expiresInSeconds = expiresInSeconds;
+                _tokenDelay = tokenDelay ?? TimeSpan.FromMilliseconds(50);
+                TokenStatusCode = tokenStatusCode;
+            }
+
+            public HttpStatusCode TokenStatusCode { get; set; }
 
             public int TokenRequestCount => Volatile.Read(ref _tokenRequestCount);
 
@@ -111,7 +200,10 @@ namespace FS.Keycloak.RestApiClient.Test.Authentication
                     return new HttpResponseMessage(HttpStatusCode.OK);
 
                 Interlocked.Increment(ref _tokenRequestCount);
-                await Task.Delay(50, cancellationToken);
+                await Task.Delay(_tokenDelay, cancellationToken);
+
+                if (TokenStatusCode != HttpStatusCode.OK)
+                    return new HttpResponseMessage(TokenStatusCode);
 
                 var token = new Dictionary<string, object>
                 {

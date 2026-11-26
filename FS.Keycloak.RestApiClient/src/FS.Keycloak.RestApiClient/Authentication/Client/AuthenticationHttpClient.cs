@@ -6,6 +6,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -24,6 +25,7 @@ namespace FS.Keycloak.RestApiClient.Authentication.Client
 
         private KeycloakApiToken _token;
         private readonly SemaphoreSlim _tokenLock = new SemaphoreSlim(1, 1);
+        private ExceptionDispatchInfo _lastRenewalError;
 
         /// <summary>
         /// Base URL to keycloak server, e.g. https://keycloak.example.com:8443
@@ -94,13 +96,32 @@ namespace FS.Keycloak.RestApiClient.Authentication.Client
         /// </summary>
         private async Task<KeycloakApiToken> GetTokenSynchronized(CancellationToken cancellationToken)
         {
+            var errorBeforeWait = Volatile.Read(ref _lastRenewalError);
             await _tokenLock.WaitAsync(cancellationToken);
 
             try
             {
                 // Re-check inside the lock: another caller may have renewed it while we waited.
-                if (_token == null || _token.IsExpired)
+                if (_token != null && !_token.IsExpired)
+                    return _token;
+
+                // A renewal failed while we waited. Retrying would queue every waiting caller
+                // behind one more full timeout each, so share the failure instead. Callers
+                // arriving after the failure saw that error before waiting and start a fresh attempt.
+                var error = _lastRenewalError;
+                if (error != null && error != errorBeforeWait)
+                    error.Throw();
+
+                try
+                {
                     _token = await GetToken(cancellationToken);
+                    _lastRenewalError = null;
+                }
+                catch (Exception ex) when (!cancellationToken.IsCancellationRequested)
+                {
+                    Volatile.Write(ref _lastRenewalError, ExceptionDispatchInfo.Capture(ex));
+                    throw;
+                }
 
                 return _token;
             }
